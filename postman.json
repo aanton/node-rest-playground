@@ -21,6 +21,21 @@
       "response": []
     },
     {
+      "name": "Get a post",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/post/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "post", "1"]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "Create a new post",
       "request": {
         "method": "POST",
@@ -47,21 +62,6 @@
           "host": ["localhost"],
           "port": "3000",
           "path": ["api", "posts"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get a post",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3000/api/post/1",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "3000",
-          "path": ["api", "post", "1"]
         }
       },
       "response": []

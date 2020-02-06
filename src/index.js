@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import sequelize, { Post } from './models';
 
 dotenv.config();
 const app = express();
@@ -10,59 +11,66 @@ const app = express();
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
 
-// Fake data
-const posts = [
-  { id: 1, title: 'My first post' },
-  { id: 2, title: 'My second post' },
-  { id: 3, title: 'My third post' },
-];
-let postsIndex = 4;
+// Routes
+app.get('/api/posts', async (req, res) => {
+  const posts = await Post.findAll();
+  res.json(posts);
+});
 
-const getPostOrFail = function(req, res) {
+app.get('/api/post/:id', async (req, res) => {
   const id = parseInt(req.params.id);
-  const post = posts.find(post => post.id === id);
-
+  const post = await Post.findByPk(id);
   if (!post) {
-    res.status(404).send({ error: `Post ${id} not found` });
+    return res.status(404).send({ error: `Post ${id} not found` });
   }
 
-  return post;
-};
-
-// Routes
-app.get('/api/posts', (req, res) => res.json(posts));
-
-app.get('/api/post/:id', (req, res) => {
-  const post = getPostOrFail(req, res);
   res.json(post);
 });
 
-app.post('/api/posts', (req, res) => {
-  const newPost = {
-    id: postsIndex++,
+app.post('/api/posts', async (req, res) => {
+  const post = await Post.create({
     title: req.body.title,
-  };
-  posts.push(newPost);
+  });
 
-  res.json(newPost);
+  res.json(post);
 });
 
-app.put('/api/post/:id', (req, res) => {
-  const postToUpdate = getPostOrFail(req, res);
-  postToUpdate.title = req.body.title;
+app.put('/api/post/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  const post = await Post.findByPk(id);
+  if (!post) {
+    return res.status(404).send({ error: `Post ${id} not found` });
+  }
 
-  res.json(postToUpdate);
+  post.title = req.body.title;
+  await post.save();
+
+  res.json(post);
 });
 
-app.delete('/api/post/:id', (req, res) => {
-  const postToRemove = getPostOrFail(req, res);
-  const postIndex = posts.findIndex(post => post.id === postToRemove.id);
-  posts.splice(postIndex, 1);
+app.delete('/api/post/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  const post = await Post.findByPk(id);
+  if (!post) {
+    return res.status(404).send({ error: `Post ${id} not found` });
+  }
 
-  res.json(postToRemove);
+  await post.destroy();
+
+  res.json(post);
 });
 
 // Start server
-app.listen(process.env.PORT, () =>
-  console.log(`Listening on port ${process.env.PORT}`)
-);
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Database connection has been established successfully');
+
+    app.listen(process.env.PORT, () =>
+      console.log(`Listening on port ${process.env.PORT}`)
+    );
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
