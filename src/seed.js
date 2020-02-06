@@ -1,4 +1,5 @@
 import sequelize, { Post } from './models';
+import faker from 'faker';
 
 const recreateDatabase = async function() {
   await Post.sync({ force: true });
@@ -6,9 +7,13 @@ const recreateDatabase = async function() {
 };
 
 const seedDatabase = async function() {
-  await Post.create({ title: 'My first post' });
-  await Post.create({ title: 'My second post' });
-  await Post.create({ title: 'My third post' });
+  const posts = Array.from({ length: 5 }).map(() => {
+    return {
+      title: faker.lorem.sentence(),
+    };
+  });
+
+  await Post.bulkCreate(posts);
   console.log(`Database seeded`);
 };
 
