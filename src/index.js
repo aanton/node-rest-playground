@@ -15,7 +15,7 @@ app.use(morgan('tiny'));
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api', postsRoutes);
+app.use('/api/posts', postsRoutes);
 
 // Start server
 

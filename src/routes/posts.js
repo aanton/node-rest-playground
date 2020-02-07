@@ -3,12 +3,12 @@ import { Post } from '../models';
 
 const router = express.Router();
 
-router.get('/posts', async (req, res) => {
+router.get('/', async (req, res) => {
   const posts = await Post.findAll();
   res.json(posts);
 });
 
-router.get('/post/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
@@ -18,7 +18,7 @@ router.get('/post/:id', async (req, res) => {
   res.json(post);
 });
 
-router.post('/posts', async (req, res) => {
+router.post('/', async (req, res) => {
   const post = await Post.create({
     title: req.body.title,
   });
@@ -26,7 +26,7 @@ router.post('/posts', async (req, res) => {
   res.json(post);
 });
 
-router.put('/post/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
@@ -39,7 +39,7 @@ router.put('/post/:id', async (req, res) => {
   res.json(post);
 });
 
-router.delete('/post/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
