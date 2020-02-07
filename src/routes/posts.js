@@ -15,6 +15,10 @@ const guard = async (req, res, next) => {
 const getAll = async (req, res) => {
   const posts = await Post.findAll({
     include: Comment,
+    order: [
+      ['id', 'ASC'],
+      [Comment, 'id', 'ASC'],
+    ],
   });
   res.json(posts);
 };
