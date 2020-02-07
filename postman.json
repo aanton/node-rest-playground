@@ -105,6 +105,52 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Get all comments of a post",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/posts/1/comments",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "posts", "1", "comments"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create a new comment in a post",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "name": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"text\": \"This comment was created by Postman\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/posts/1/comments",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "posts", "1", "comments"]
+        }
+      },
+      "response": []
     }
   ],
   "protocolProfileBehavior": {}
