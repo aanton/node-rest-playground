@@ -3,7 +3,9 @@ import { guardPost } from './guards';
 
 const getAll = async (req, res) => {
   const post = res.locals.post;
-  const comments = await post.getComments();
+  const comments = await post.getComments({
+    order: [['id', 'DESC']],
+  });
   res.json(comments);
 };
 
