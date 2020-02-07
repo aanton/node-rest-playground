@@ -17,6 +17,11 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api/posts', postsRoutes);
 
+// 404 routes
+app.use(function(req, res) {
+  res.status(404).json({ error: `Route not found: ${req.originalUrl}` });
+});
+
 // Start server
 
 sequelize
