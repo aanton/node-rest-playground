@@ -25,4 +25,19 @@ npm run seed
 ## Playground
 
 - Start the live-reload development server using `npm start`
-- Load `postman.json` in [Postman](https://www.postman.com/) & run the provided requests
+- Load `postman.json` in [Postman](https://www.postman.com/) & run the provided examples
+
+## API
+
+### Posts API
+
+- `GET /api/posts/` gets all the posts
+- `POST /api/posts/` creates a new post
+- `GET /api/posts/:postId` gets a post with its comments
+- `PUT /api/posts/:postId` updates a post
+- `DELETE /api/posts/:postId` deletes a post
+
+### Post's comments API
+
+- `GET /api/posts/:postId/comments` gets all the comments of a post
+- `POST /api/posts/:postId/comments` creates a new comment in a post
