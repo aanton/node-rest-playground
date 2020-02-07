@@ -1,4 +1,4 @@
-import sequelize, { Post, Comment } from './models';
+import sequelize, { Post, Comment, Tag } from './models';
 import faker from 'faker';
 
 const recreate = async () => {
@@ -23,16 +23,48 @@ const getFakeComments = count => {
   });
 };
 
+const getFakeTags = count => {
+  return Array.from({ length: count }, () => {
+    const slug = faker.lorem.slug();
+    const name = slug[0].toUpperCase() + slug.slice(1).replace('-', ' ');
+
+    return {
+      slug: slug,
+      name: name,
+    };
+  });
+};
+
 const seed = async () => {
-  const posts = getFakePosts(5);
+  await Promise.all(
+    getFakeTags(10).map(async tag => {
+      await Tag.create(tag);
+    })
+  );
+
+  const tags = await Tag.findAll();
 
   await Promise.all(
-    posts.map(async post => {
-      await Post.create(post, { include: Comment });
+    getFakePosts(5).map(async post => {
+      const newPost = await Post.create(post, { include: Comment });
+      const countTags = faker.random.number({ min: 2, max: 4 });
+      newPost.addTags(getRandomTags(tags, countTags));
     })
   );
 
   console.log(`Database seeded`);
+};
+
+const getRandomTags = (tags, count) => {
+  const clone = [...tags];
+
+  let result = [];
+  for (let i = 0; i < count; i++) {
+    var index = Math.floor(Math.random() * clone.length);
+    result.push(clone[index]);
+    clone.splice(index, 1);
+  }
+  return result;
 };
 
 (async () => {
