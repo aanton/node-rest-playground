@@ -20,7 +20,11 @@ const getAll = async (req, res) => {
 };
 
 const get = async (req, res) => {
-  const post = res.locals.post;
+  const post = await Post.findByPk(res.locals.post.id, {
+    include: Comment,
+    order: [[Comment, 'id', 'DESC']],
+  });
+
   res.json(post);
 };
 
