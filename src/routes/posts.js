@@ -1,16 +1,6 @@
 import express from 'express';
+import { guardPost } from './guards';
 import { Post, Comment } from '../models';
-
-const guard = async (req, res, next) => {
-  const id = parseInt(req.params.id);
-  const post = await Post.findByPk(id);
-  if (!post) {
-    return res.status(404).send({ error: `Post ${id} not found` });
-  }
-
-  res.locals.post = post;
-  next();
-};
 
 const getAll = async (req, res) => {
   const posts = await Post.findAll({
@@ -55,8 +45,8 @@ const router = express.Router();
 
 router.get('/', getAll);
 router.post('/', create);
-router.get('/:id(\\d+)', [guard, get]);
-router.put('/:id(\\d+)', [guard, update]);
-router.delete('/:id(\\d+)', [guard, remove]);
+router.get('/:postId(\\d+)', [guardPost, get]);
+router.put('/:postId(\\d+)', [guardPost, update]);
+router.delete('/:postId(\\d+)', [guardPost, remove]);
 
 export default router;
