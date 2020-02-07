@@ -24,15 +24,12 @@ app.use(function(req, res) {
   res.status(404).json({ error: `Route not found: ${req.originalUrl}` });
 });
 
-// Start server
+// Start database connection & web server
+const startServer = () => {
+  app.listen(port, () => console.log(`Listening on port ${port}`));
+};
 
 sequelize
   .authenticate()
-  .then(() => {
-    console.log('Database connection has been established successfully');
-
-    app.listen(port, () => console.log(`Listening on port ${port}`));
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
-  });
+  .then(() => startServer())
+  .catch(err => console.error('Unable to connect to the database:', err));
