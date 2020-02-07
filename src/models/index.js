@@ -12,7 +12,7 @@ export const Comment = sequelize.define('comment', {
   text: DataTypes.TEXT,
 });
 
-Post.hasMany(Comment);
+Post.hasMany(Comment, { onDelete: 'CASCADE' });
 Comment.belongsTo(Post);
 
 export default sequelize;
