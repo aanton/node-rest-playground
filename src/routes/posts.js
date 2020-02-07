@@ -54,8 +54,8 @@ const remove = async (req, res) => {
 const router = express.Router();
 
 router.get('/', getAll);
-router.get('/:id(\\d+)', [guard, get]);
 router.post('/', create);
+router.get('/:id(\\d+)', [guard, get]);
 router.put('/:id(\\d+)', [guard, update]);
 router.delete('/:id(\\d+)', [guard, remove]);
 
