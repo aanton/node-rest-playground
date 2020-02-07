@@ -1,12 +1,12 @@
 import sequelize, { Post } from './models';
 import faker from 'faker';
 
-const recreateDatabase = async function() {
+const recreate = async () => {
   await Post.sync({ force: true });
   console.log(`Database recreated`);
 };
 
-const seedDatabase = async function() {
+const seed = async () => {
   const posts = Array.from({ length: 5 }).map(() => {
     return {
       title: faker.lorem.sentence(),
@@ -17,14 +17,8 @@ const seedDatabase = async function() {
   console.log(`Database seeded`);
 };
 
-sequelize
-  .authenticate()
-  .then(async () => {
-    console.log(`Database connection has been established successfully`);
-
-    await recreateDatabase();
-    await seedDatabase();
-  })
-  .catch(err => {
-    console.error(`Unable to connect to the database`, err);
-  });
+(async () => {
+  await sequelize.authenticate();
+  await recreate();
+  await seed();
+})();
