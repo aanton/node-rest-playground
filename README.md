@@ -5,9 +5,16 @@ Just a personal project to play with NodeJS ecosystem
 ## Installation
 
 - Clone this repository
-- Install dependencies using `npm install`
-- Create the `.env` file using `.env.example` as a reference & fill all parameters
-- Create & seed the database using `npm run seed`
+- Install dependencies
+- Create the `.env` configuration using `.env.example` as a reference & fill all parameters properly
+- Create & seed the database
+
+```bash
+git clone https://github.com/aanton/node-rest-playground.git
+cd node-rest-playground
+npm install
+npm run seed
+```
 
 ## Playground
 
