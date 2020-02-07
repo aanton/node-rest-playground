@@ -1,6 +1,6 @@
 import express from 'express';
 import { guardPost } from './guards';
-import { Post, Comment } from '../models';
+import { Post, Comment, Tag } from '../models';
 
 const getAll = async (req, res) => {
   const posts = await Post.findAll({
@@ -11,8 +11,18 @@ const getAll = async (req, res) => {
 
 const get = async (req, res) => {
   const post = await Post.findByPk(res.locals.post.id, {
-    include: Comment,
-    order: [[Comment, 'id', 'DESC']],
+    include: [
+      { model: Comment, attributes: ['id', 'text', 'createdAt'] },
+      {
+        model: Tag,
+        attributes: ['id', 'slug', 'name'],
+        through: { attributes: [] },
+      },
+    ],
+    order: [
+      [Comment, 'id', 'DESC'],
+      [Tag, 'name', 'ASC'],
+    ],
   });
 
   res.json(post);
