@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
   res.json(posts);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id(\\d+)', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
   res.json(post);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id(\\d+)', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
@@ -39,7 +39,7 @@ router.put('/:id', async (req, res) => {
   res.json(post);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id(\\d+)', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
