@@ -1,14 +1,12 @@
 import express from 'express';
 import { Post } from '../models';
 
-const router = express.Router();
-
-router.get('/', async (req, res) => {
+const getAll = async (req, res) => {
   const posts = await Post.findAll();
   res.json(posts);
-});
+};
 
-router.get('/:id(\\d+)', async (req, res) => {
+const get = async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
@@ -16,17 +14,17 @@ router.get('/:id(\\d+)', async (req, res) => {
   }
 
   res.json(post);
-});
+};
 
-router.post('/', async (req, res) => {
+const create = async (req, res) => {
   const post = await Post.create({
     title: req.body.title,
   });
 
   res.json(post);
-});
+};
 
-router.put('/:id(\\d+)', async (req, res) => {
+const update = async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
@@ -37,9 +35,9 @@ router.put('/:id(\\d+)', async (req, res) => {
   await post.save();
 
   res.json(post);
-});
+};
 
-router.delete('/:id(\\d+)', async (req, res) => {
+const remove = async (req, res) => {
   const id = parseInt(req.params.id);
   const post = await Post.findByPk(id);
   if (!post) {
@@ -49,6 +47,14 @@ router.delete('/:id(\\d+)', async (req, res) => {
   await post.destroy();
 
   res.json(post);
-});
+};
+
+const router = express.Router();
+
+router.get('/', getAll);
+router.get('/:id(\\d+)', get);
+router.post('/', create);
+router.put('/:id(\\d+)', update);
+router.delete('/:id(\\d+)', remove);
 
 export default router;
