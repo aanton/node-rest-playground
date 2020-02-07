@@ -8,6 +8,7 @@ import postsRoutes from './routes/posts';
 
 dotenv.config();
 const app = express();
+const port = process.env.PORT || 3000;
 
 // Middlewares
 app.use(morgan('tiny'));
@@ -23,9 +24,7 @@ sequelize
   .then(() => {
     console.log('Database connection has been established successfully');
 
-    app.listen(process.env.PORT, () =>
-      console.log(`Listening on port ${process.env.PORT}`)
-    );
+    app.listen(port, () => console.log(`Listening on port ${port}`));
   })
   .catch(err => {
     console.error('Unable to connect to the database:', err);
