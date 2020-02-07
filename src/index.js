@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import sequelize from './models';
 import postsRoutes from './routes/posts';
 import postsCommentsRoutes from './routes/postsComments';
+import commentsRoutes from './routes/comments';
 
 dotenv.config();
 const app = express();
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 // Routes
 app.use('/api/posts', postsRoutes);
 app.use('/api/posts', postsCommentsRoutes);
+app.use('/api/comments', commentsRoutes);
 
 // 404 routes
 app.use(function(req, res) {

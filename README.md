@@ -41,3 +41,8 @@ npm run seed
 
 - `GET /api/posts/:postId/comments` gets all the comments of a post
 - `POST /api/posts/:postId/comments` creates a new comment in a post
+
+### Comments API
+
+- `GET /api/comments/` gets all the comments
+- `DELETE /api/comments/:commentId` deletes a comment
