@@ -1,5 +1,5 @@
 import express from 'express';
-import { Post } from '../models';
+import { Post, Comment } from '../models';
 
 const guard = async (req, res, next) => {
   const id = parseInt(req.params.id);
@@ -13,7 +13,9 @@ const guard = async (req, res, next) => {
 };
 
 const getAll = async (req, res) => {
-  const posts = await Post.findAll();
+  const posts = await Post.findAll({
+    include: Comment,
+  });
   res.json(posts);
 };
 

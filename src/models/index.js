@@ -8,4 +8,11 @@ export const Post = sequelize.define('post', {
   title: DataTypes.STRING,
 });
 
+export const Comment = sequelize.define('comment', {
+  text: DataTypes.TEXT,
+});
+
+Post.hasMany(Comment);
+Comment.belongsTo(Post);
+
 export default sequelize;
