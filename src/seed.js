@@ -9,7 +9,7 @@ const recreate = async () => {
 const getFakePosts = count => {
   return Array.from({ length: count }, () => {
     return {
-      title: faker.lorem.sentence(),
+      title: faker.lorem.sentence().replace(/\.$/, ''),
       comments: getFakeComments(faker.random.number({ min: 1, max: 3 })),
     };
   });
@@ -18,7 +18,7 @@ const getFakePosts = count => {
 const getFakeComments = count => {
   return Array.from({ length: count }, () => {
     return {
-      text: faker.lorem.paragraph(),
+      text: faker.lorem.paragraph().replace(/\.$/, ''),
     };
   });
 };
