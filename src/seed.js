@@ -10,7 +10,7 @@ const getFakePosts = count => {
   return Array.from({ length: count }, () => {
     return {
       title: faker.lorem.sentence(),
-      comments: getFakeComments(faker.random.number(3)),
+      comments: getFakeComments(faker.random.number({ min: 1, max: 3 })),
     };
   });
 };
