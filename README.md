@@ -1,6 +1,7 @@
 # Playground project for develop a REST API in NodeJS
 
 Just a personal project to play with NodeJS ecosystem:
+
 - [Express](https://expressjs.com/), a minimal and flexible Node.js web application
 - [Sequelize](https://sequelize.org/), a promise-based Node.js ORM for SQLite & other relational databases
 - [@babel/node](https://babeljs.io/docs/en/next/babel-node.html), a CLI that works exactly the same as the Node.js CLI, with the added benefit of using [Babel](https://babeljs.io/), a toolchain to convert modern ECMAScript 2015+ code into a backwards compatible version of JavaScript
@@ -54,3 +55,18 @@ npm run seed
 - `GET /api/tags/` gets all the tags
 - `GET /api/tags/:tagIg` gets a tag with its posts
 - `DELETE /api/tags/:tagIg` deletes a tag
+
+## ToDo
+
+- Fix duplicate `Post.findByPk` when getting a post
+- Testing a REST API
+- TDD when developing a REST API
+- Sequelize getters to have computed properties (e.g. permalink)
+- Sequelize migrations
+- Sequelize logging
+- Remove timestamps from `PostTags` pivot table
+- Deploying to a production server using [this approach](https://github.com/babel/example-node-server)
+- Choose a free production server
+- User model
+- Authentication & authorization
+- I+D micro-frameworks that fit to create REST APIs
