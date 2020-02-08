@@ -6,6 +6,7 @@ Just a personal project to play with NodeJS ecosystem:
 - [@babel/node](https://babeljs.io/docs/en/next/babel-node.html), a CLI that works exactly the same as the Node.js CLI, with the added benefit of using [Babel](https://babeljs.io/), a toolchain to convert modern ECMAScript 2015+ code into a backwards compatible version of JavaScript
 - [Nodemon](https://nodemon.io/), an utility that monitors changes in source files & automatically restart the development server
 - [DotEnv](https://github.com/motdotla/dotenv), a loader of environment variables from a `.env` file
+- [Lodash](https://lodash.com/), an library which provides utility functions for common programming tasks using the functional programming paradigm
 - [Faker](http://marak.github.io/faker.js/), a generator of fake data
 
 ## Installation
