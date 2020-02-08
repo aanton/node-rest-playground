@@ -1,5 +1,6 @@
 import sequelize, { Post, Comment, Tag } from './models';
 import faker from 'faker';
+import random from 'lodash.random';
 import sampleSize from 'lodash.samplesize';
 
 const recreate = async () => {
@@ -11,7 +12,7 @@ const getFakePosts = count => {
   return Array.from({ length: count }, () => {
     return {
       title: faker.lorem.sentence().replace(/\.$/, ''),
-      comments: getFakeComments(faker.random.number({ min: 1, max: 3 })),
+      comments: getFakeComments(random(1, 3)),
     };
   });
 };
@@ -48,8 +49,7 @@ const seed = async () => {
   await Promise.all(
     getFakePosts(5).map(async post => {
       const newPost = await Post.create(post, { include: Comment });
-      const countTags = faker.random.number({ min: 2, max: 4 });
-      newPost.addTags(sampleSize(tags, countTags));
+      newPost.addTags(sampleSize(tags, random(1, 5)));
     })
   );
 
