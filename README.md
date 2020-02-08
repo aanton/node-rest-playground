@@ -46,6 +46,7 @@ npm run seed
 ### Comments API
 
 - `GET /api/comments/` gets all the comments
+- `GET /api/comments/search?q=[query]` searches comments
 - `DELETE /api/comments/:commentId` deletes a comment
 
 ### Tags API

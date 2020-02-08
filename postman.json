@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "5e3d025b-3066-4c5a-a0b3-39266a914bda",
+    "_postman_id": "ff082f63-b41b-49c7-a312-f64a7c3c097e",
     "name": "Playground project",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -163,6 +163,27 @@
           "host": ["localhost"],
           "port": "3000",
           "path": ["api", "comments"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search comments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/comments/search?q=Postman",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "comments", "search"],
+          "query": [
+            {
+              "key": "q",
+              "value": "Postman"
+            }
+          ]
         }
       },
       "response": []

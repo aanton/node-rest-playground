@@ -1,4 +1,5 @@
 import express from 'express';
+import { Op } from 'sequelize';
 import { Comment } from '../models';
 
 const guard = async (req, res, next) => {
@@ -19,6 +20,23 @@ const getAll = async (req, res) => {
   res.json(comments);
 };
 
+const search = async (req, res) => {
+  const search = (req.query.q || '').trim();
+  if (!search) {
+    return res.status(404).send({ error: `Search parameter is empty/invalid` });
+  }
+
+  const comments = await Comment.findAll({
+    where: {
+      text: {
+        [Op.substring]: search,
+      },
+    },
+    order: [['id', 'DESC']],
+  });
+  res.json(comments);
+};
+
 const remove = async (req, res) => {
   const comment = res.locals.comment;
   await comment.destroy();
@@ -29,6 +47,7 @@ const remove = async (req, res) => {
 const router = express.Router();
 
 router.get('/', getAll);
+router.get('/search', search);
 router.delete('/:commentId(\\d+)', [guard, remove]);
 
 export default router;
