@@ -26,7 +26,7 @@ npm run seed
 ## Playground
 
 - Start the live-reload development server using `npm start`
-- Load `postman.json` in [Postman](https://www.postman.com/) & run the provided examples
+- Load `postman/collection.json` in [Postman](https://www.postman.com/) & run the provided examples
 
 ## API
 
