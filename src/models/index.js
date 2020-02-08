@@ -17,10 +17,11 @@ export const Tag = sequelize.define('tag', {
   name: DataTypes.STRING,
 });
 
+// In One-To-Many relationships the default for ON DELETE is SET NULL & the default for ON UPDATE is CASCADE
 Post.hasMany(Comment, { onDelete: 'CASCADE' });
 Comment.belongsTo(Post);
 
-// The defaults for both ON UPDATE and ON DELETE are CASCADE for Many-To-Many relationships
+// In Many-To-Many relationships the defaults for both ON UPDATE and ON DELETE are CASCADE
 Post.belongsToMany(Tag, { through: 'PostTags' });
 Tag.belongsToMany(Post, { through: 'PostTags' });
 
