@@ -1,5 +1,6 @@
 import sequelize, { Post, Comment, Tag } from './models';
 import faker from 'faker';
+import sampleSize from 'lodash.samplesize';
 
 const recreate = async () => {
   await sequelize.sync({ force: true });
@@ -48,23 +49,11 @@ const seed = async () => {
     getFakePosts(5).map(async post => {
       const newPost = await Post.create(post, { include: Comment });
       const countTags = faker.random.number({ min: 2, max: 4 });
-      newPost.addTags(getRandomTags(tags, countTags));
+      newPost.addTags(sampleSize(tags, countTags));
     })
   );
 
   console.log(`Database seeded`);
-};
-
-const getRandomTags = (tags, count) => {
-  const clone = [...tags];
-
-  let result = [];
-  for (let i = 0; i < count; i++) {
-    var index = Math.floor(Math.random() * clone.length);
-    result.push(clone[index]);
-    clone.splice(index, 1);
-  }
-  return result;
 };
 
 (async () => {
