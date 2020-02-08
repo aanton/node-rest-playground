@@ -1,6 +1,16 @@
 import express from 'express';
-import { guardComment } from './guards';
 import { Comment } from '../models';
+
+const guard = async (req, res, next) => {
+  const commentId = parseInt(req.params.commentId);
+  const comment = await Comment.findByPk(commentId);
+  if (!comment) {
+    return res.status(404).send({ error: `Comment ${commentId} not found` });
+  }
+
+  res.locals.comment = comment;
+  next();
+};
 
 const getAll = async (req, res) => {
   const comments = await Comment.findAll({
@@ -19,6 +29,6 @@ const remove = async (req, res) => {
 const router = express.Router();
 
 router.get('/', getAll);
-router.delete('/:commentId(\\d+)', [guardComment, remove]);
+router.delete('/:commentId(\\d+)', [guard, remove]);
 
 export default router;

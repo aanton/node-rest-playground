@@ -1,6 +1,16 @@
 import express from 'express';
-import { guardTag } from './guards';
 import { Post, Tag } from '../models';
+
+const guard = async (req, res, next) => {
+  const tagId = parseInt(req.params.tagId);
+  const tag = await Tag.findByPk(tagId);
+  if (!tag) {
+    return res.status(404).send({ error: `Tag ${tagId} not found` });
+  }
+
+  res.locals.tag = tag;
+  next();
+};
 
 const getAll = async (req, res) => {
   const tags = await Tag.findAll({
@@ -34,7 +44,7 @@ const remove = async (req, res) => {
 const router = express.Router();
 
 router.get('/', getAll);
-router.get('/:tagId(\\d+)', [guardTag, get]);
-router.delete('/:tagId(\\d+)', [guardTag, remove]);
+router.get('/:tagId(\\d+)', [guard, get]);
+router.delete('/:tagId(\\d+)', [guard, remove]);
 
 export default router;

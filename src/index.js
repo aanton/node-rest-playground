@@ -5,7 +5,6 @@ import bodyParser from 'body-parser';
 
 import sequelize from './models';
 import postsRoutes from './routes/posts';
-import postsCommentsRoutes from './routes/postsComments';
 import commentsRoutes from './routes/comments';
 import tagsRoutes from './routes/tags';
 
@@ -19,7 +18,6 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/api/posts', postsRoutes);
-app.use('/api/posts', postsCommentsRoutes);
 app.use('/api/comments', commentsRoutes);
 app.use('/api/tags', tagsRoutes);
 
