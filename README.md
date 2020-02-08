@@ -33,7 +33,7 @@ npm run seed
 
 - `GET /api/posts/` gets all the posts
 - `POST /api/posts/` creates a new post
-- `GET /api/posts/:postId` gets a post with its comments
+- `GET /api/posts/:postId` gets a post with its comments & tags
 - `PUT /api/posts/:postId` updates a post
 - `DELETE /api/posts/:postId` deletes a post
 
@@ -46,3 +46,9 @@ npm run seed
 
 - `GET /api/comments/` gets all the comments
 - `DELETE /api/comments/:commentId` deletes a comment
+
+### Tags API
+
+- `GET /api/tags/` gets all the tags
+- `GET /api/tags/:tagIg` gets a tag with its posts
+- `DELETE /api/tags/:tagIg` deletes a tag

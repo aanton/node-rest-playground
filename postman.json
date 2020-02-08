@@ -181,6 +181,51 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Get all tags",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/tags",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "tags"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get a tag",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/tags/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "tags", "1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete a tag",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/tags/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "tags", "1"]
+        }
+      },
+      "response": []
     }
   ],
   "protocolProfileBehavior": {}
