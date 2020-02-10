@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -8,7 +7,6 @@ import postsRoutes from './routes/posts';
 import commentsRoutes from './routes/comments';
 import tagsRoutes from './routes/tags';
 
-dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
