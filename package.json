@@ -9,7 +9,9 @@
   "main": "src/index.js",
   "scripts": {
     "start": "nodemon -r dotenv/config --exec babel-node src/index.js",
-    "seed": "babel-node -r dotenv/config src/seed.js"
+    "seed": "babel-node -r dotenv/config src/seed.js",
+    "test": "DATABASE_URI=sqlite::memory jest",
+    "test:watch": "DATABASE_URI=sqlite::memory jest --watch"
   },
   "author": "aanton",
   "license": "ISC",
@@ -27,7 +29,19 @@
     "@babel/core": "^7.8.4",
     "@babel/node": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
+    "babel-jest": "^25.1.0",
     "faker": "^4.1.0",
-    "nodemon": "^2.0.2"
+    "jest": "^25.1.0",
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": [
+      "dotenv/config"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
