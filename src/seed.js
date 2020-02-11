@@ -28,7 +28,7 @@ const getFakeComments = count => {
 const getFakeTags = count => {
   return Array.from({ length: count }, () => {
     const slug = faker.lorem.slug();
-    const name = slug[0].toUpperCase() + slug.slice(1).replace('-', ' ');
+    const name = slug[0].toUpperCase() + slug.slice(1).replace(/-/g, ' ');
 
     return {
       slug: slug,
