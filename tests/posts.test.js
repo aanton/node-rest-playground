@@ -69,3 +69,29 @@ describe('Creates a new post', () => {
     done();
   });
 });
+
+describe('Lists all posts', () => {
+  it('Gets an empty list if database is empty', async done => {
+    const response = await request.get('/api/posts').send();
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+
+    done();
+  });
+
+  it('Gets all posts ordered by newest', async done => {
+    const data = [{ title: 'First post' }, { title: 'Second post' }];
+    await Post.create(data[0]);
+    await Post.create(data[1]);
+
+    const response = await request.get('/api/posts').send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(2);
+    expect(response.body[0]).toEqual(expect.objectContaining(data[1]));
+    expect(response.body[1]).toEqual(expect.objectContaining(data[0]));
+
+    done();
+  });
+});
