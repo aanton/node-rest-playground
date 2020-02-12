@@ -39,10 +39,34 @@ npm install
 npm run seed
 ```
 
-## Playground
+## Scripts
 
-- Start the live-reload development server using `npm start`
-- Load `postman/collection.json` in [Postman](https://www.postman.com/) & run the provided examples
+### Run a local server
+
+- Run a local server with live-reload functionality
+- Optionally, load `postman/collection.json` in Postman & play with the API
+
+```bash
+npm start
+```
+
+### Run tests
+
+- Run the tests using an in-memory database
+- Optionally, run the tests with a watcher to relaunch the tests when the code is modified
+
+```bash
+npm test
+npm run test:watch
+```
+
+### Seed the database with fake data
+
+- Recreate the database with fake data
+
+```bash
+npm run seed
+```
 
 ## API
 
