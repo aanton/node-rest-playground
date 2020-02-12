@@ -23,17 +23,19 @@ List of packages & tools used during development:
 - [Faker](http://marak.github.io/faker.js/), a generator of fake data
 - [Postman](https://www.postman.com/), a collaboration platform for API development
 
-## Installation
+## Local installation
 
 - Clone this repository
 - Install dependencies
 - Create the `.env` configuration using `.env.example` as a reference & fill all parameters properly
-- Create & seed the database
+- Optionally seed the database with fake data
 
 ```bash
 git clone https://github.com/aanton/node-rest-playground.git
 cd node-rest-playground
 npm install
+
+# Optional step
 npm run seed
 ```
 
