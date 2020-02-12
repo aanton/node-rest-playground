@@ -73,9 +73,9 @@ npm run seed
 
 ## ToDo
 
+- Create tests of all API methods
+- Test-Driven development of new functionalities: create a post with tags, add new fields to posts, ...
 - Fix duplicate `Post.findByPk` when getting a post
-- Testing a REST API
-- TDD when developing a REST API
 - Sequelize getters to have computed properties (e.g. permalink)
 - Sequelize migrations
 - Sequelize logging
