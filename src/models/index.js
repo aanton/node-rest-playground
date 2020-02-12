@@ -9,7 +9,7 @@ export const Post = sequelize.define('post', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      notNull: { msg: 'Parameter title is required' },
+      notEmpty: { msg: 'Parameter title is required' },
     },
   },
 });
