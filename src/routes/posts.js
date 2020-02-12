@@ -38,12 +38,16 @@ const get = async (req, res) => {
   res.json(post);
 };
 
-const create = async (req, res) => {
-  const post = await Post.create({
-    title: req.body.title,
-  });
+const create = async (req, res, next) => {
+  try {
+    const post = await Post.create({
+      title: req.body.title,
+    });
 
-  res.json(post);
+    res.json(post);
+  } catch (err) {
+    next(err);
+  }
 };
 
 const update = async (req, res) => {

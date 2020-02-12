@@ -5,7 +5,13 @@ const sequelize = new Sequelize(process.env.DATABASE_URI, {
 });
 
 export const Post = sequelize.define('post', {
-  title: DataTypes.STRING,
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Parameter title is required' },
+    },
+  },
 });
 
 export const Comment = sequelize.define('comment', {

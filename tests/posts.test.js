@@ -36,4 +36,18 @@ describe('POST /api/posts', () => {
     done();
   });
 
+  it('Should fail if title is missing', async done => {
+    const wrongPost = {};
+
+    const response = await request
+      .post('/api/posts')
+      .set('Content-type', 'application/json')
+      .send(wrongPost);
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toBeTruthy();
+    expect(response.body.error).toMatch(/SequelizeValidationError/);
+
+    done();
+  });
 });
