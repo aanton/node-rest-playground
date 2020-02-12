@@ -22,4 +22,9 @@ app.use(function(req, res) {
   res.status(404).json({ error: `Route not found: ${req.originalUrl}` });
 });
 
+// Error handling
+app.use(function(err, req, res, next) {
+  res.status(500).json({ error: err.name });
+});
+
 export default app;
