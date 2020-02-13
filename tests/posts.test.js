@@ -95,3 +95,34 @@ describe('Lists all posts', () => {
     done();
   });
 });
+
+describe('Gets a post', () => {
+  it('Fails if the post does not exist', async done => {
+    const response = await request.get('/api/posts/1').send();
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBeTruthy();
+    expect(response.body.error).toMatch(/Post.+not found/);
+
+    done();
+  });
+
+  it('Gets a post without relationships', async done => {
+    const data = { title: 'First post' };
+    await Post.create(data);
+
+    const response = await request.get('/api/posts/1').send();
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(1);
+    expect(response.body.title).toBe(data.title);
+    expect(response.body.createdAt).toBeTruthy();
+    expect(response.body.updatedAt).toBeTruthy();
+    expect(response.body.createdAt).toBe(response.body.updatedAt);
+
+    done();
+  });
+
+  it.skip('Gets a post with comments', {});
+  it.skip('Gets a post with tags', {});
+  it.skip('Gets a post with all relationships', {});
+});
