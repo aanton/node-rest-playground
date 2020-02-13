@@ -4,6 +4,20 @@ import supertest from 'supertest';
 
 const request = supertest(app);
 
+const checkModelNotFound = response => {
+  expect(response.status).toBe(404);
+  expect(response.body.error).toBeTruthy();
+  expect(response.body.error).toMatch(/Tag.+not found/);
+};
+
+const checkModel = (model, expected) => {
+  expect(model.id).toBe(expected.id);
+  expect(model.name).toBe(expected.name);
+  expect(model.slug).toBe(expected.slug);
+  expect(model.createdAt).toBeTruthy();
+  expect(model.updatedAt).toBeTruthy();
+};
+
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -35,4 +49,31 @@ describe('Lists all tags', () => {
 
     done();
   });
+});
+
+describe('Gets a tag', () => {
+  it('Fails if the tag does not exist', async done => {
+    const response = await request.get('/api/tags/1').send();
+
+    checkModelNotFound(response);
+
+    done();
+  });
+
+  it('Gets a tag without relationships', async done => {
+    const data = { name: 'Tag A', slug: 'tag-a' };
+    await Tag.create(data);
+
+    const response = await request.get('/api/tags/1').send();
+
+    expect(response.status).toBe(200);
+
+    const expectedModel = { id: 1, ...data };
+    const responseModel = response.body;
+    checkModel(responseModel, expectedModel);
+
+    done();
+  });
+
+  it.skip('Gets a tag with related comments', {});
 });
