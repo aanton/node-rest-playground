@@ -130,3 +130,90 @@ describe('Gets a post', () => {
   it.skip('Gets a post with tags', {});
   it.skip('Gets a post with all relationships', {});
 });
+
+describe('Updates a post', () => {
+  it('Fails if the post does not exist', async done => {
+    const data = {};
+
+    const response = await request
+      .put('/api/posts/1')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBeTruthy();
+    expect(response.body.error).toMatch(/Post.+not found/);
+
+    done();
+  });
+
+  it('Fails if the title is missing', async done => {
+    const previousData = { title: 'First post' };
+    await Post.create(previousData);
+
+    const data = {};
+
+    const response = await request
+      .put('/api/posts/1')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toBeTruthy();
+    expect(response.body.error).toMatch(/SequelizeValidationError/);
+
+    done();
+  });
+
+  it('Fails if the title is empty', async done => {
+    const previousData = { title: 'First post' };
+    await Post.create(previousData);
+
+    const data = {
+      title: '',
+    };
+
+    const response = await request
+      .put('/api/posts/1')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toBeTruthy();
+    expect(response.body.error).toMatch(/SequelizeValidationError/);
+
+    done();
+  });
+
+  it.skip('Fails if the title is too short', {});
+
+  it('Updates a post & returns it', async done => {
+    const previousData = { title: 'First post' };
+    await Post.create(previousData);
+
+    const data = {
+      title: 'First post was updated',
+    };
+
+    const response = await request
+      .put('/api/posts/1')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    // Check response
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(1);
+    expect(response.body.title).toBe(data.title);
+    expect(response.body.createdAt).toBeTruthy();
+    expect(response.body.updatedAt).toBeTruthy();
+
+    // Search the post in the database
+    const dbPost = await Post.findByPk(response.body.id);
+    expect(dbPost.title).toBe(data.title);
+    expect(dbPost.id).toBe(response.body.id);
+    expect(dbPost.createdAt).toEqual(new Date(response.body.createdAt));
+    expect(dbPost.updatedAt).toEqual(new Date(response.body.updatedAt));
+
+    done();
+  });
+});

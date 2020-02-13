@@ -50,12 +50,16 @@ const create = async (req, res, next) => {
   }
 };
 
-const update = async (req, res) => {
-  const post = res.locals.post;
-  post.title = req.body.title;
-  await post.save();
+const update = async (req, res, next) => {
+  try {
+    const post = res.locals.post;
+    post.title = req.body.title;
+    await post.save();
 
-  res.json(post);
+    res.json(post);
+  } catch (err) {
+    next(err);
+  }
 };
 
 const remove = async (req, res) => {
