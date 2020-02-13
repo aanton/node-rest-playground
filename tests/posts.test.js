@@ -217,3 +217,52 @@ describe('Updates a post', () => {
     done();
   });
 });
+
+describe('Deletes a post', () => {
+  it('Fails if the post does not exist', async done => {
+    const response = await request
+      .delete('/api/posts/1')
+      .set('Content-type', 'application/json')
+      .send();
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBeTruthy();
+    expect(response.body.error).toMatch(/Post.+not found/);
+
+    done();
+  });
+
+  it('Deletes a post & returns it', async done => {
+    const previousData = { title: 'First post' };
+    await Post.create(previousData);
+
+    let response = await request
+      .delete('/api/posts/1')
+      .set('Content-type', 'application/json')
+      .send();
+
+    // Check response
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(1);
+    expect(response.body.title).toBe(previousData.title);
+
+    // Search the post in the database
+    const dbPost = await Post.findByPk(response.body.id);
+    expect(dbPost).toBe(null);
+
+    // Request the deleted post
+    response = await request
+      .delete('/api/posts/1')
+      .set('Content-type', 'application/json')
+      .send();
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBeTruthy();
+    expect(response.body.error).toMatch(/Post.+not found/);
+
+    done();
+  });
+
+  it.skip('Deletes a post with comments', {});
+  it.skip('Deletes a post with tags', {});
+  it.skip('Deletes a post with all relationships', {});
+});
