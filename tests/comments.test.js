@@ -4,6 +4,18 @@ import supertest from 'supertest';
 
 const request = supertest(app);
 
+const checkModelNotFound = response => {
+  expect(response.status).toBe(404);
+  expect(response.body.error).toMatch(/Comment.+not found/);
+};
+
+const checkModel = (model, expected) => {
+  expect(model.id).toBe(expected.id);
+  expect(model.text).toBe(expected.text);
+  expect(model.createdAt).toBeTruthy();
+  expect(model.updatedAt).toBeTruthy();
+};
+
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -87,6 +99,42 @@ describe('Searches comments', () => {
     expect(response.body.length).toBe(2);
     expect(response.body[0]).toEqual(expect.objectContaining(data[1]));
     expect(response.body[1]).toEqual(expect.objectContaining(data[0]));
+
+    done();
+  });
+});
+
+describe('Deletes a comment', () => {
+  it('Fails if the comment does not exist', async done => {
+    const response = await request
+      .delete('/api/comments/1')
+      .set('Content-type', 'application/json')
+      .send();
+
+    checkModelNotFound(response);
+
+    done();
+  });
+
+  it('Deletes a comment & returns it', async done => {
+    const data = { text: 'First comment' };
+    await Comment.create(data);
+
+    let response = await request
+      .delete('/api/comments/1')
+      .set('Content-type', 'application/json')
+      .send();
+
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...data };
+
+    // Checks the response
+    const responseModel = response.body;
+    checkModel(responseModel, expectedModel);
+
+    // Checks the database
+    const databaseModel = await Comment.findByPk(expectedModel.id);
+    expect(databaseModel).toBe(null);
 
     done();
   });
