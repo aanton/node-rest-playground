@@ -97,8 +97,15 @@ npm run seed
 
 ## ToDo
 
-- Create tests of all API methods
-- Test-Driven development of new functionalities: create a post with tags, add new fields to posts, ...
+- Implement pending tests & review code coverage
+- Test-Driven development of new functionalities
+  - Validation rules for comment fields
+  - Validation rules for tag fields: slug must be unique
+  - Generate tag slug autmatically
+  - New route to get a tag by slug
+  - Create a post with tags using tag names
+  - Create a post with tags using tag identifiers
+  - New post fields: text, publishedAt, URI (computed property)
 - Fix duplicate `Post.findByPk` when getting a post
 - Sequelize getters to have computed properties (e.g. permalink)
 - Sequelize migrations
