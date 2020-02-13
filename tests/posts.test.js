@@ -41,7 +41,9 @@ describe('Creates a new post', () => {
     done();
   });
 
-  it('Saves a post in the database & returns it with all its attributes', async done => {
+  it.skip('Fails if the title is too short', {});
+
+  it('Saves a post & returns it', async done => {
     const data = {
       title: 'My first test post',
     };
@@ -68,6 +70,8 @@ describe('Creates a new post', () => {
 
     done();
   });
+
+  it.skip('Saves a post with tags & returns it', {});
 });
 
 describe('Lists all posts', () => {
