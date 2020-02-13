@@ -1,8 +1,11 @@
 import { Sequelize, DataTypes } from 'sequelize';
 
-const sequelize = new Sequelize(process.env.DATABASE_URI, {
-  logging: false,
-});
+const sequelize = new Sequelize(
+  process.env.NODE_ENV === 'test' ? 'sqlite::memory' : process.env.DATABASE_URI,
+  {
+    logging: false,
+  }
+);
 
 export const Post = sequelize.define('post', {
   title: {

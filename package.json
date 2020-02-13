@@ -10,8 +10,8 @@
   "scripts": {
     "start": "nodemon -r dotenv/config --exec babel-node src/index.js",
     "seed": "babel-node -r dotenv/config src/seed.js",
-    "test": "DATABASE_URI=sqlite::memory jest",
-    "test:watch": "DATABASE_URI=sqlite::memory jest --watch"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "aanton",
   "license": "ISC",
