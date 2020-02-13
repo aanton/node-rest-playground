@@ -4,6 +4,25 @@ import supertest from 'supertest';
 
 const request = supertest(app);
 
+const checkModelValidationError = response => {
+  expect(response.status).toBe(500);
+  expect(response.body.error).toBeTruthy();
+  expect(response.body.error).toMatch(/SequelizeValidationError/);
+};
+
+const checkModelNotFound = response => {
+  expect(response.status).toBe(404);
+  expect(response.body.error).toBeTruthy();
+  expect(response.body.error).toMatch(/Post.+not found/);
+};
+
+const checkModel = (model, expected) => {
+  expect(model.id).toBe(expected.id);
+  expect(model.title).toBe(expected.title);
+  expect(model.createdAt).toBeTruthy();
+  expect(model.updatedAt).toBeTruthy();
+};
+
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -17,9 +36,7 @@ describe('Creates a new post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    expect(response.status).toBe(500);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/SequelizeValidationError/);
+    checkModelValidationError(response);
 
     done();
   });
@@ -34,9 +51,7 @@ describe('Creates a new post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    expect(response.status).toBe(500);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/SequelizeValidationError/);
+    checkModelValidationError(response);
 
     done();
   });
@@ -53,20 +68,19 @@ describe('Creates a new post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    // Check response
     expect(response.status).toBe(200);
-    expect(typeof response.body.id).toBe('number');
-    expect(response.body.title).toBe(data.title);
-    expect(response.body.createdAt).toBeTruthy();
-    expect(response.body.updatedAt).toBeTruthy();
-    expect(response.body.createdAt).toBe(response.body.updatedAt);
+    const expectedModel = { id: 1, ...data };
 
-    // Search the post in the database
-    const dbPost = await Post.findByPk(response.body.id);
-    expect(dbPost.title).toBe(data.title);
-    expect(dbPost.id).toBe(response.body.id);
-    expect(dbPost.createdAt).toEqual(new Date(response.body.createdAt));
-    expect(dbPost.updatedAt).toEqual(new Date(response.body.updatedAt));
+    // Checks the response
+    const responseModel = response.body;
+    checkModel(responseModel, expectedModel);
+    expect(responseModel.createdAt).toBe(responseModel.updatedAt);
+
+    // Checks the database
+    const databaseModel = await Post.findByPk(responseModel.id);
+    checkModel(databaseModel, expectedModel);
+    expect(databaseModel.createdAt).toEqual(new Date(responseModel.createdAt));
+    expect(databaseModel.updatedAt).toEqual(new Date(responseModel.updatedAt));
 
     done();
   });
@@ -104,9 +118,7 @@ describe('Gets a post', () => {
   it('Fails if the post does not exist', async done => {
     const response = await request.get('/api/posts/1').send();
 
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/Post.+not found/);
+    checkModelNotFound(response);
 
     done();
   });
@@ -116,12 +128,12 @@ describe('Gets a post', () => {
     await Post.create(data);
 
     const response = await request.get('/api/posts/1').send();
+
     expect(response.status).toBe(200);
-    expect(response.body.id).toBe(1);
-    expect(response.body.title).toBe(data.title);
-    expect(response.body.createdAt).toBeTruthy();
-    expect(response.body.updatedAt).toBeTruthy();
-    expect(response.body.createdAt).toBe(response.body.updatedAt);
+
+    const expectedModel = { id: 1, ...data };
+    const responseModel = response.body;
+    checkModel(responseModel, expectedModel);
 
     done();
   });
@@ -140,9 +152,7 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/Post.+not found/);
+    checkModelNotFound(response);
 
     done();
   });
@@ -158,9 +168,7 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    expect(response.status).toBe(500);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/SequelizeValidationError/);
+    checkModelValidationError(response);
 
     done();
   });
@@ -178,9 +186,7 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    expect(response.status).toBe(500);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/SequelizeValidationError/);
+    checkModelValidationError(response);
 
     done();
   });
@@ -200,19 +206,18 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    // Check response
     expect(response.status).toBe(200);
-    expect(response.body.id).toBe(1);
-    expect(response.body.title).toBe(data.title);
-    expect(response.body.createdAt).toBeTruthy();
-    expect(response.body.updatedAt).toBeTruthy();
+    const expectedModel = { id: 1, ...data };
 
-    // Search the post in the database
-    const dbPost = await Post.findByPk(response.body.id);
-    expect(dbPost.title).toBe(data.title);
-    expect(dbPost.id).toBe(response.body.id);
-    expect(dbPost.createdAt).toEqual(new Date(response.body.createdAt));
-    expect(dbPost.updatedAt).toEqual(new Date(response.body.updatedAt));
+    // Checks the response
+    const responseModel = response.body;
+    checkModel(responseModel, expectedModel);
+
+    // Checks the database
+    const databaseModel = await Post.findByPk(responseModel.id);
+    checkModel(databaseModel, expectedModel);
+    expect(databaseModel.createdAt).toEqual(new Date(responseModel.createdAt));
+    expect(databaseModel.updatedAt).toEqual(new Date(responseModel.updatedAt));
 
     done();
   });
@@ -225,39 +230,37 @@ describe('Deletes a post', () => {
       .set('Content-type', 'application/json')
       .send();
 
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/Post.+not found/);
+    checkModelNotFound(response);
 
     done();
   });
 
   it('Deletes a post & returns it', async done => {
-    const previousData = { title: 'First post' };
-    await Post.create(previousData);
+    const data = { title: 'First post' };
+    await Post.create(data);
 
     let response = await request
       .delete('/api/posts/1')
       .set('Content-type', 'application/json')
       .send();
 
-    // Check response
     expect(response.status).toBe(200);
-    expect(response.body.id).toBe(1);
-    expect(response.body.title).toBe(previousData.title);
+    const expectedModel = { id: 1, ...data };
 
-    // Search the post in the database
-    const dbPost = await Post.findByPk(response.body.id);
-    expect(dbPost).toBe(null);
+    // Checks the response
+    const responseModel = response.body;
+    checkModel(responseModel, expectedModel);
 
-    // Request the deleted post
+    // Checks the database
+    const databaseModel = await Post.findByPk(response.body.id);
+    expect(databaseModel).toBe(null);
+
+    // Requests the deleted post
     response = await request
       .delete('/api/posts/1')
       .set('Content-type', 'application/json')
       .send();
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBeTruthy();
-    expect(response.body.error).toMatch(/Post.+not found/);
+    checkModelNotFound(response);
 
     done();
   });
