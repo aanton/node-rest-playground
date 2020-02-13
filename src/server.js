@@ -9,7 +9,9 @@ import tagsRoutes from './routes/tags';
 const app = express();
 
 // Middlewares
-app.use(morgan('tiny'));
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('tiny'));
+}
 app.use(bodyParser.json());
 
 // Routes
