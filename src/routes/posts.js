@@ -69,7 +69,7 @@ const remove = async (req, res) => {
   res.json(post);
 };
 
-const getAllComments = async (req, res) => {
+const getComments = async (req, res) => {
   const post = res.locals.post;
   const comments = await post.getComments({
     order: [['id', 'DESC']],
@@ -95,7 +95,7 @@ router.put('/:postId(\\d+)', [guard, update]);
 router.delete('/:postId(\\d+)', [guard, remove]);
 
 // Post's comments routes
-router.get('/:postId/comments', [guard, getAllComments]);
+router.get('/:postId/comments', [guard, getComments]);
 router.post('/:postId/comments', [guard, createComment]);
 
 export default router;

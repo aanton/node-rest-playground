@@ -1,5 +1,5 @@
 import app from '../src/server';
-import sequelize, { Post } from '../src/models';
+import sequelize, { Comment, Post } from '../src/models';
 import supertest from 'supertest';
 
 const request = supertest(app);
@@ -268,4 +268,43 @@ describe('Deletes a post', () => {
   it.skip('Deletes a post with comments', {});
   it.skip('Deletes a post with tags', {});
   it.skip('Deletes a post with all relationships', {});
+});
+
+describe('Gets all comments of a post', () => {
+  it('Fails if the post does not exist', async done => {
+    const response = await request.get('/api/posts/1/comments').send();
+
+    checkModelNotFound(response);
+
+    done();
+  });
+
+  it('Gets an empty list if the post has not comments', async done => {
+    const data = { title: 'First post' };
+    await Post.create(data);
+
+    const response = await request.get('/api/posts/1/comments').send();
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+
+    done();
+  });
+
+  it('Gets the comments of a post, ordered by newest', async done => {
+    const data = {
+      title: 'First post',
+      comments: [{ text: 'First comment' }, { text: 'Second comment' }],
+    };
+    await Post.create(data, { include: Comment });
+
+    const response = await request.get('/api/posts/1/comments').send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(2);
+    expect(response.body[0]).toEqual(expect.objectContaining(data.comments[1]));
+    expect(response.body[1]).toEqual(expect.objectContaining(data.comments[0]));
+
+    done();
+  });
 });
