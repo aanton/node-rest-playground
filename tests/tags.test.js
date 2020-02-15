@@ -77,3 +77,48 @@ describe('Gets a tag', () => {
 
   it.skip('Gets a tag with related comments', {});
 });
+
+describe('Deletes a tag', () => {
+  it('Fails if the tag does not exist', async done => {
+    const response = await request
+      .delete('/api/tags/1')
+      .set('Content-type', 'application/json')
+      .send();
+
+    checkModelNotFound(response);
+
+    done();
+  });
+
+  it('Deletes a tag without linked posts', async done => {
+    const data = { name: 'Tag A', slug: 'tag-a' };
+    await Tag.create(data);
+
+    let response = await request
+      .delete('/api/tags/1')
+      .set('Content-type', 'application/json')
+      .send();
+
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...data };
+
+    // Checks the response
+    const responseModel = response.body;
+    checkModel(responseModel, expectedModel);
+
+    // Checks the database
+    const databaseModel = await Tag.findByPk(1);
+    expect(databaseModel).toBe(null);
+
+    // Requests the deleted tag
+    response = await request
+      .delete('/api/tags/1')
+      .set('Content-type', 'application/json')
+      .send();
+    checkModelNotFound(response);
+
+    done();
+  });
+
+  it.skip('Deletes a tag with linked posts', {});
+});
