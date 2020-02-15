@@ -23,6 +23,13 @@ const checkModel = (model, expected) => {
   expect(model.updatedAt).toBeTruthy();
 };
 
+const checkCommentModel = (model, expected) => {
+  expect(model.id).toBe(expected.id);
+  expect(model.text).toBe(expected.text);
+  expect(model.createdAt).toBeTruthy();
+  expect(model.updatedAt).toBeTruthy();
+};
+
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -307,4 +314,70 @@ describe('Gets all comments of a post', () => {
 
     done();
   });
+});
+
+describe('Creates a comment in a post', () => {
+  it('Fails if the post does not exist', async done => {
+    const response = await request.post('/api/posts/1/comments').send();
+
+    checkModelNotFound(response);
+
+    done();
+  });
+
+  it('Fails if the text is missing', async done => {
+    await Post.create({ title: 'First post' });
+    const data = {};
+
+    const response = await request
+      .post('/api/posts/1/comments')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    checkModelValidationError(response);
+
+    done();
+  });
+
+  it('Fails if the text is empty', async done => {
+    await Post.create({ title: 'First post' });
+    const data = { text: '' };
+
+    const response = await request
+      .post('/api/posts/1/comments')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    checkModelValidationError(response);
+
+    done();
+  });
+
+  it('Creates a comment in a post without previous comments', async done => {
+    await Post.create({ title: 'First post' });
+    const data = { text: 'First comment' };
+
+    const response = await request
+      .post('/api/posts/1/comments')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...data };
+
+    // Checks the response
+    const responseModel = response.body;
+    checkCommentModel(responseModel, expectedModel);
+    expect(responseModel.createdAt).toBe(responseModel.updatedAt);
+
+    // Checks the database
+    const databaseModel = await Comment.findByPk(1);
+    checkCommentModel(databaseModel, expectedModel);
+    expect(databaseModel.createdAt).toEqual(new Date(responseModel.createdAt));
+    expect(databaseModel.updatedAt).toEqual(new Date(responseModel.updatedAt));
+
+    done();
+  });
+
+  it.skip('Creates a comment in a post that already has comments', {});
 });

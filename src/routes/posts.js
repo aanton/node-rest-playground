@@ -77,13 +77,17 @@ const getComments = async (req, res) => {
   res.json(comments);
 };
 
-const createComment = async (req, res) => {
-  const post = res.locals.post;
-  const comment = await post.createComment({
-    text: req.body.text,
-  });
+const createComment = async (req, res, next) => {
+  try {
+    const post = res.locals.post;
+    const comment = await post.createComment({
+      text: req.body.text,
+    });
 
-  res.json(comment);
+    res.json(comment);
+  } catch (err) {
+    next(err);
+  }
 };
 
 const router = express.Router();

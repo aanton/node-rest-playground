@@ -18,7 +18,13 @@ export const Post = sequelize.define('post', {
 });
 
 export const Comment = sequelize.define('comment', {
-  text: DataTypes.TEXT,
+  text: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Parameter text is required' },
+    },
+  },
 });
 
 export const Tag = sequelize.define('tag', {
