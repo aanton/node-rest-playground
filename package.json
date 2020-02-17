@@ -39,6 +39,9 @@
     "setupFiles": [
       "dotenv/config"
     ],
+    "setupFilesAfterEnv": [
+      "./tests/setup"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]

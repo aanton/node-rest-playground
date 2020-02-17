@@ -4,20 +4,6 @@ import supertest from 'supertest';
 
 const request = supertest(app);
 
-const checkModelNotFound = response => {
-  expect(response.status).toBe(404);
-  expect(response.body.error).toBeTruthy();
-  expect(response.body.error).toMatch(/Tag.+not found/);
-};
-
-const checkModel = (model, expected) => {
-  expect(model.id).toBe(expected.id);
-  expect(model.name).toBe(expected.name);
-  expect(model.slug).toBe(expected.slug);
-  expect(model.createdAt).toBeTruthy();
-  expect(model.updatedAt).toBeTruthy();
-};
-
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -44,8 +30,8 @@ describe('Lists all tags', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toEqual(expect.objectContaining(data[0]));
-    expect(response.body[1]).toEqual(expect.objectContaining(data[1]));
+    expect(response.body[0]).toMatchObject(data[0]);
+    expect(response.body[1]).toMatchObject(data[1]);
 
     done();
   });
@@ -55,7 +41,7 @@ describe('Gets a tag', () => {
   it('Fails if the tag does not exist', async done => {
     const response = await request.get('/api/tags/1').send();
 
-    checkModelNotFound(response);
+    expect(response).toBeTagNotFound();
 
     done();
   });
@@ -67,58 +53,45 @@ describe('Gets a tag', () => {
     const response = await request.get('/api/tags/1').send();
 
     expect(response.status).toBe(200);
-
     const expectedModel = { id: 1, ...data };
-    const responseModel = response.body;
-    checkModel(responseModel, expectedModel);
+    expect(response.body).toMatchObject(expectedModel);
 
     done();
   });
 
-  it.skip('Gets a tag with related comments', {});
+  it.skip('Gets a tag with linked posts', {});
 });
 
 describe('Deletes a tag', () => {
   it('Fails if the tag does not exist', async done => {
-    const response = await request
-      .delete('/api/tags/1')
-      .set('Content-type', 'application/json')
-      .send();
+    const response = await request.delete('/api/tags/1').send();
 
-    checkModelNotFound(response);
+    expect(response).toBeTagNotFound();
 
     done();
   });
 
-  it('Deletes a tag without linked posts', async done => {
+  it('Deletes a tag without linked posts & returns it', async done => {
     const data = { name: 'Tag A', slug: 'tag-a' };
     await Tag.create(data);
 
-    let response = await request
-      .delete('/api/tags/1')
-      .set('Content-type', 'application/json')
-      .send();
-
-    expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    let response = await request.delete('/api/tags/1').send();
 
     // Checks the response
-    const responseModel = response.body;
-    checkModel(responseModel, expectedModel);
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...data };
+    expect(response.body).toMatchObject(expectedModel);
 
     // Checks the database
     const databaseModel = await Tag.findByPk(1);
     expect(databaseModel).toBe(null);
 
     // Requests the deleted tag
-    response = await request
-      .delete('/api/tags/1')
-      .set('Content-type', 'application/json')
-      .send();
-    checkModelNotFound(response);
+    response = await request.delete('/api/tags/1').send();
+    expect(response).toBeTagNotFound();
 
     done();
   });
 
-  it.skip('Deletes a tag with linked posts', {});
+  it.skip('Deletes a tag with linked posts & returns it', {});
 });

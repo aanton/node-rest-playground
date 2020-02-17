@@ -4,32 +4,6 @@ import supertest from 'supertest';
 
 const request = supertest(app);
 
-const checkModelValidationError = response => {
-  expect(response.status).toBe(500);
-  expect(response.body.error).toBeTruthy();
-  expect(response.body.error).toMatch(/SequelizeValidationError/);
-};
-
-const checkModelNotFound = response => {
-  expect(response.status).toBe(404);
-  expect(response.body.error).toBeTruthy();
-  expect(response.body.error).toMatch(/Post.+not found/);
-};
-
-const checkModel = (model, expected) => {
-  expect(model.id).toBe(expected.id);
-  expect(model.title).toBe(expected.title);
-  expect(model.createdAt).toBeTruthy();
-  expect(model.updatedAt).toBeTruthy();
-};
-
-const checkCommentModel = (model, expected) => {
-  expect(model.id).toBe(expected.id);
-  expect(model.text).toBe(expected.text);
-  expect(model.createdAt).toBeTruthy();
-  expect(model.updatedAt).toBeTruthy();
-};
-
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -43,7 +17,7 @@ describe('Creates a new post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    checkModelValidationError(response);
+    expect(response).toBeModelValidationError();
 
     done();
   });
@@ -58,7 +32,7 @@ describe('Creates a new post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    checkModelValidationError(response);
+    expect(response).toBeModelValidationError();
 
     done();
   });
@@ -75,19 +49,18 @@ describe('Creates a new post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
+    // Checks the response
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...data };
-
-    // Checks the response
-    const responseModel = response.body;
-    checkModel(responseModel, expectedModel);
-    expect(responseModel.createdAt).toBe(responseModel.updatedAt);
+    expect(response.body).toMatchObject(expectedModel);
+    expect(response.body.createdAt).toBeTruthy();
+    expect(response.body.createdAt).toBe(response.body.updatedAt);
 
     // Checks the database
-    const databaseModel = await Post.findByPk(responseModel.id);
-    checkModel(databaseModel, expectedModel);
-    expect(databaseModel.createdAt).toEqual(new Date(responseModel.createdAt));
-    expect(databaseModel.updatedAt).toEqual(new Date(responseModel.updatedAt));
+    const databaseModel = await Post.findByPk(1);
+    expect(databaseModel).toMatchObject(expectedModel);
+    expect(databaseModel.createdAt).toEqual(new Date(response.body.createdAt));
+    expect(databaseModel.updatedAt).toEqual(new Date(response.body.updatedAt));
 
     done();
   });
@@ -114,8 +87,8 @@ describe('Lists all posts', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toEqual(expect.objectContaining(data[1]));
-    expect(response.body[1]).toEqual(expect.objectContaining(data[0]));
+    expect(response.body[0]).toMatchObject(data[1]);
+    expect(response.body[1]).toMatchObject(data[0]);
 
     done();
   });
@@ -125,7 +98,7 @@ describe('Gets a post', () => {
   it('Fails if the post does not exist', async done => {
     const response = await request.get('/api/posts/1').send();
 
-    checkModelNotFound(response);
+    expect(response).toBePostNotFound();
 
     done();
   });
@@ -137,10 +110,8 @@ describe('Gets a post', () => {
     const response = await request.get('/api/posts/1').send();
 
     expect(response.status).toBe(200);
-
     const expectedModel = { id: 1, ...data };
-    const responseModel = response.body;
-    checkModel(responseModel, expectedModel);
+    expect(response.body).toMatchObject(expectedModel);
 
     done();
   });
@@ -159,14 +130,13 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    checkModelNotFound(response);
+    expect(response).toBePostNotFound();
 
     done();
   });
 
   it('Fails if the title is missing', async done => {
-    const previousData = { title: 'First post' };
-    await Post.create(previousData);
+    await Post.create({ title: 'First post' });
 
     const data = {};
 
@@ -175,14 +145,13 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    checkModelValidationError(response);
+    expect(response).toBeModelValidationError();
 
     done();
   });
 
   it('Fails if the title is empty', async done => {
-    const previousData = { title: 'First post' };
-    await Post.create(previousData);
+    await Post.create({ title: 'First post' });
 
     const data = {
       title: '',
@@ -193,7 +162,7 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    checkModelValidationError(response);
+    expect(response).toBeModelValidationError();
 
     done();
   });
@@ -201,8 +170,7 @@ describe('Updates a post', () => {
   it.skip('Fails if the title is too short', {});
 
   it('Updates a post & returns it', async done => {
-    const previousData = { title: 'First post' };
-    await Post.create(previousData);
+    await Post.create({ title: 'First post' });
 
     const data = {
       title: 'First post was updated',
@@ -213,18 +181,16 @@ describe('Updates a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
+    // Checks the response
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...data };
-
-    // Checks the response
-    const responseModel = response.body;
-    checkModel(responseModel, expectedModel);
+    expect(response.body).toMatchObject(expectedModel);
 
     // Checks the database
-    const databaseModel = await Post.findByPk(responseModel.id);
-    checkModel(databaseModel, expectedModel);
-    expect(databaseModel.createdAt).toEqual(new Date(responseModel.createdAt));
-    expect(databaseModel.updatedAt).toEqual(new Date(responseModel.updatedAt));
+    const databaseModel = await Post.findByPk(1);
+    expect(databaseModel).toMatchObject(expectedModel);
+    expect(databaseModel.createdAt).toEqual(new Date(response.body.createdAt));
+    expect(databaseModel.updatedAt).toEqual(new Date(response.body.updatedAt));
 
     done();
   });
@@ -232,12 +198,9 @@ describe('Updates a post', () => {
 
 describe('Deletes a post', () => {
   it('Fails if the post does not exist', async done => {
-    const response = await request
-      .delete('/api/posts/1')
-      .set('Content-type', 'application/json')
-      .send();
+    const response = await request.delete('/api/posts/1').send();
 
-    checkModelNotFound(response);
+    expect(response).toBePostNotFound();
 
     done();
   });
@@ -246,28 +209,21 @@ describe('Deletes a post', () => {
     const data = { title: 'First post' };
     await Post.create(data);
 
-    let response = await request
-      .delete('/api/posts/1')
-      .set('Content-type', 'application/json')
-      .send();
+    let response = await request.delete('/api/posts/1').send();
 
+    
+    // Checks the response
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...data };
-
-    // Checks the response
-    const responseModel = response.body;
-    checkModel(responseModel, expectedModel);
+    expect(response.body).toMatchObject(expectedModel);
 
     // Checks the database
-    const databaseModel = await Post.findByPk(response.body.id);
+    const databaseModel = await Post.findByPk(1);
     expect(databaseModel).toBe(null);
 
     // Requests the deleted post
-    response = await request
-      .delete('/api/posts/1')
-      .set('Content-type', 'application/json')
-      .send();
-    checkModelNotFound(response);
+    response = await request.delete('/api/posts/1').send();
+    expect(response).toBePostNotFound();
 
     done();
   });
@@ -281,7 +237,7 @@ describe('Gets all comments of a post', () => {
   it('Fails if the post does not exist', async done => {
     const response = await request.get('/api/posts/1/comments').send();
 
-    checkModelNotFound(response);
+    expect(response).toBePostNotFound();
 
     done();
   });
@@ -309,8 +265,8 @@ describe('Gets all comments of a post', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toEqual(expect.objectContaining(data.comments[1]));
-    expect(response.body[1]).toEqual(expect.objectContaining(data.comments[0]));
+    expect(response.body[0]).toMatchObject(data.comments[1]);
+    expect(response.body[1]).toMatchObject(data.comments[0]);
 
     done();
   });
@@ -320,7 +276,7 @@ describe('Creates a comment in a post', () => {
   it('Fails if the post does not exist', async done => {
     const response = await request.post('/api/posts/1/comments').send();
 
-    checkModelNotFound(response);
+    expect(response).toBePostNotFound();
 
     done();
   });
@@ -334,7 +290,7 @@ describe('Creates a comment in a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    checkModelValidationError(response);
+    expect(response).toBeModelValidationError();
 
     done();
   });
@@ -348,7 +304,7 @@ describe('Creates a comment in a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
-    checkModelValidationError(response);
+    expect(response).toBeModelValidationError();
 
     done();
   });
@@ -362,19 +318,18 @@ describe('Creates a comment in a post', () => {
       .set('Content-type', 'application/json')
       .send(data);
 
+    // Checks the response
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...data };
-
-    // Checks the response
-    const responseModel = response.body;
-    checkCommentModel(responseModel, expectedModel);
-    expect(responseModel.createdAt).toBe(responseModel.updatedAt);
+    expect(response.body).toMatchObject(expectedModel);
+    expect(response.body.createdAt).toBeTruthy();
+    expect(response.body.createdAt).toBe(response.body.updatedAt);
 
     // Checks the database
     const databaseModel = await Comment.findByPk(1);
-    checkCommentModel(databaseModel, expectedModel);
-    expect(databaseModel.createdAt).toEqual(new Date(responseModel.createdAt));
-    expect(databaseModel.updatedAt).toEqual(new Date(responseModel.updatedAt));
+    expect(databaseModel).toMatchObject(expectedModel);
+    expect(databaseModel.createdAt).toEqual(new Date(response.body.createdAt));
+    expect(databaseModel.updatedAt).toEqual(new Date(response.body.updatedAt));
 
     done();
   });
