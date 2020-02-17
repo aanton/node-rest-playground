@@ -4,6 +4,17 @@ import supertest from 'supertest';
 
 const request = supertest(app);
 
+const tags = [
+  { name: 'Tag A', slug: 'tag-a' },
+  { name: 'Tag B', slug: 'tag-b' },
+];
+
+const tagWithPosts = {
+  name: 'Tag A',
+  slug: 'tag-a',
+  posts: [{ title: 'First post' }, { title: 'Second post' }],
+};
+
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -19,19 +30,15 @@ describe('Lists all tags', () => {
   });
 
   it('Gets all tags ordered by name', async done => {
-    const data = [
-      { name: 'Tag A', slug: 'tag-a' },
-      { name: 'Tag B', slug: 'tag-b' },
-    ];
-    await Tag.create(data[0]);
-    await Tag.create(data[1]);
+    await Tag.create(tags[0]);
+    await Tag.create(tags[1]);
 
     const response = await request.get('/api/tags').send();
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toMatchObject(data[0]);
-    expect(response.body[1]).toMatchObject(data[1]);
+    expect(response.body[0]).toMatchObject(tags[0]);
+    expect(response.body[1]).toMatchObject(tags[1]);
 
     done();
   });
@@ -47,33 +54,24 @@ describe('Gets a tag', () => {
   });
 
   it('Gets a tag without relationships', async done => {
-    const data = { name: 'Tag A', slug: 'tag-a' };
-    await Tag.create(data);
+    await Tag.create(tags[0]);
 
     const response = await request.get('/api/tags/1').send();
 
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data, posts: [] };
+    const expectedModel = { id: 1, ...tags[0], posts: [] };
     expect(response.body).toMatchObject(expectedModel);
 
     done();
   });
 
   it('Gets a tag with linked posts', async done => {
-    const data = {
-      name: 'Tag A',
-      slug: 'tag-a',
-      posts: [
-        { id: 1, title: 'First post' },
-        { id: 2, title: 'Second post' },
-      ],
-    };
-    await Tag.create(data, { include: Post });
+    await Tag.create(tagWithPosts, { include: Post });
 
     const response = await request.get('/api/tags/1').send();
 
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...tagWithPosts };
     expectedModel.posts = expectedModel.posts.reverse();
     expect(response.body).toMatchObject(expectedModel);
 
@@ -91,14 +89,13 @@ describe('Deletes a tag', () => {
   });
 
   it('Deletes a tag without linked posts & returns it', async done => {
-    const data = { name: 'Tag A', slug: 'tag-a' };
-    await Tag.create(data);
+    await Tag.create(tags[0]);
 
     let response = await request.delete('/api/tags/1').send();
 
     // Checks the response
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...tags[0] };
     expect(response.body).toMatchObject(expectedModel);
 
     // Checks the database
