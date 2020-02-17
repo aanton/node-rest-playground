@@ -20,7 +20,11 @@ const getAll = async (req, res) => {
 };
 
 const get = async (req, res) => {
-  const tag = await Tag.findWithPostsByPk(res.locals.tag.id);
+  const tagId = parseInt(req.params.tagId);
+  const tag = await Tag.findWithPostsByPk(req.params.tagId);
+  if (!tag) {
+    return res.status(404).send({ error: `Tag ${tagId} not found` });
+  }
 
   res.json(tag);
 };
@@ -35,7 +39,7 @@ const remove = async (req, res) => {
 const router = express.Router();
 
 router.get('/', getAll);
-router.get('/:tagId(\\d+)', [guard, get]);
+router.get('/:tagId(\\d+)', [get]);
 router.delete('/:tagId(\\d+)', [guard, remove]);
 
 export default router;
