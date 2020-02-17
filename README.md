@@ -21,7 +21,6 @@ List of packages & tools used during development:
 - [Jest](https://jestjs.io/), a testing framework that [supports Babel](https://github.com/facebook/jest#using-babel)
 - [SuperTest](https://github.com/visionmedia/supertest), a library for testing Node.js HTTP servers using a fluent API
 - [Faker](http://marak.github.io/faker.js/), a generator of fake data
-- [Postman](https://www.postman.com/), a collaboration platform for API development
 
 ## Local installation
 
@@ -44,7 +43,7 @@ npm run seed
 ### Run a local server
 
 - Run a local server with live-reload functionality
-- Optionally, load `postman/collection.json` in Postman & play with the API
+- Optionally, use the [pre-defined HTTP requests](./resources/client.http) in the [vscode REST client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
 
 ```bash
 npm start
