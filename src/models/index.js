@@ -40,6 +40,22 @@ Comment.belongsTo(Post);
 Post.belongsToMany(Tag, { through: 'PostTags' });
 Tag.belongsToMany(Post, { through: 'PostTags' });
 
+Post.findByTag = async function(tagId) {
+  return await this.findAll({
+    include: [
+      {
+        model: Tag,
+        required: true,
+        through: {
+          where: {
+            tagId: tagId,
+          },
+        },
+      },
+    ],
+  });
+};
+
 Tag.findWithPostsByPk = async function(key) {
   return await this.findByPk(key, {
     include: [
