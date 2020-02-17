@@ -1,5 +1,5 @@
 import app from '../src/server';
-import sequelize, { Tag } from '../src/models';
+import sequelize, { Post, Tag } from '../src/models';
 import supertest from 'supertest';
 
 const request = supertest(app);
@@ -53,13 +53,32 @@ describe('Gets a tag', () => {
     const response = await request.get('/api/tags/1').send();
 
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...data, posts: [] };
     expect(response.body).toMatchObject(expectedModel);
 
     done();
   });
 
-  it.skip('Gets a tag with linked posts', {});
+  it('Gets a tag with linked posts', async done => {
+    const data = {
+      name: 'Tag A',
+      slug: 'tag-a',
+      posts: [
+        { id: 1, title: 'First post' },
+        { id: 2, title: 'Second post' },
+      ],
+    };
+    await Tag.create(data, { include: Post });
+
+    const response = await request.get('/api/tags/1').send();
+
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...data };
+    expectedModel.posts = expectedModel.posts.reverse();
+    expect(response.body).toMatchObject(expectedModel);
+
+    done();
+  });
 });
 
 describe('Deletes a tag', () => {
