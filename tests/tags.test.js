@@ -72,7 +72,7 @@ describe('Gets a tag', () => {
 
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...tagWithPosts };
-    expectedModel.posts = expectedModel.posts.reverse();
+    expectedModel.posts = expectedModel.posts.reverse(); // Posts are sorted by newest
     expect(response.body).toMatchObject(expectedModel);
 
     done();
@@ -109,5 +109,27 @@ describe('Deletes a tag', () => {
     done();
   });
 
-  it.skip('Deletes a tag with linked posts & returns it', {});
+  it('Deletes a tag with linked posts & returns it', async done => {
+    await Tag.create(tagWithPosts, { include: Post });
+
+    let response = await request.delete('/api/tags/1').send();
+
+    // Checks the response
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...tagWithPosts };
+    delete expectedModel.posts; // Posts are not returned when deleting a tag
+    expect(response.body).toMatchObject(expectedModel);
+
+    // Checks the database
+    const databaseModel = await Tag.findByPk(1);
+    expect(databaseModel).toBe(null);
+    const linkedPosts = await Post.findByTag(1);
+    expect(linkedPosts).toEqual([]);
+
+    // Requests the deleted tag
+    response = await request.delete('/api/tags/1').send();
+    expect(response).toBeTagNotFound();
+
+    done();
+  });
 });
