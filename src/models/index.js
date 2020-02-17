@@ -40,4 +40,17 @@ Comment.belongsTo(Post);
 Post.belongsToMany(Tag, { through: 'PostTags' });
 Tag.belongsToMany(Post, { through: 'PostTags' });
 
+Tag.findWithPostsByPk = async function(key) {
+  return await this.findByPk(key, {
+    include: [
+      {
+        model: Post,
+        attributes: ['id', 'title'],
+        through: { attributes: [] },
+      },
+    ],
+    order: [[Post, 'id', 'DESC']],
+  });
+};
+
 export default sequelize;

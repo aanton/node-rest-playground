@@ -1,5 +1,5 @@
 import express from 'express';
-import { Post, Tag } from '../models';
+import { Tag } from '../models';
 
 const guard = async (req, res, next) => {
   const tagId = parseInt(req.params.tagId);
@@ -20,16 +20,7 @@ const getAll = async (req, res) => {
 };
 
 const get = async (req, res) => {
-  const tag = await Tag.findByPk(res.locals.tag.id, {
-    include: [
-      {
-        model: Post,
-        attributes: ['id', 'title'],
-        through: { attributes: [] },
-      },
-    ],
-    order: [[Post, 'id', 'DESC']],
-  });
+  const tag = await Tag.findWithPostsByPk(res.locals.tag.id);
 
   res.json(tag);
 };
