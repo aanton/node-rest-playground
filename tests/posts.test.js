@@ -3,7 +3,7 @@ import { sequelize, models } from '../src/models';
 import supertest from 'supertest';
 
 const request = supertest(app);
-const { Comment, Post } = models;
+const { Comment, Post, Tag } = models;
 
 const posts = [{ title: 'First post' }, { title: 'Second post' }];
 const postWithSpecialChars = { title: 'Ⓜ東🐵𣇵😮📷' };
@@ -168,7 +168,19 @@ describe('Gets a post', () => {
     done();
   });
 
-  it.skip('Gets a post with tags', {});
+  it('Gets a post with tags', async done => {
+    await Post.create(postWithRelations, { include: Tag });
+
+    const response = await request.get('/api/posts/1').send();
+
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...postWithRelations };
+    delete expectedModel.comments; // Ignore comments
+    expect(response.body).toMatchObject(expectedModel);
+
+    done();
+  });
+
   it.skip('Gets a post with all relationships', {});
 });
 
