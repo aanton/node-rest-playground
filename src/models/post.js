@@ -9,6 +9,10 @@ export default class Post extends Sequelize.Model {
           allowNull: false,
           validate: {
             notEmpty: { msg: 'Parameter title is required' },
+            len: {
+              args: [5, 255],
+              msg: 'Parameter title must have 5-255 characters',
+            },
           },
         },
       },
