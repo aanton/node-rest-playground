@@ -5,6 +5,8 @@ import supertest from 'supertest';
 const request = supertest(app);
 const { Comment } = models;
 
+const comments = [{ text: 'First comment' }, { text: 'Second comment' }];
+
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -20,27 +22,24 @@ describe('Lists all comments', () => {
   });
 
   it('Gets all comments ordered by newest', async done => {
-    const data = [{ text: 'First comment' }, { text: 'Second comment' }];
-    await Comment.create(data[0]);
-    await Comment.create(data[1]);
+    await Comment.create(comments[0]);
+    await Comment.create(comments[1]);
 
     const response = await request.get('/api/comments').send();
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toMatchObject(data[1]);
-    expect(response.body[1]).toMatchObject(data[0]);
+    expect(response.body[0]).toMatchObject(comments[1]);
+    expect(response.body[1]).toMatchObject(comments[0]);
 
     done();
   });
 });
 
 describe('Searches comments', () => {
-  const data = [{ text: 'First comment' }, { text: 'Second comment' }];
-
   beforeEach(async () => {
-    await Comment.create(data[0]);
-    await Comment.create(data[1]);
+    await Comment.create(comments[0]);
+    await Comment.create(comments[1]);
   });
 
   it('Fails if the query is missing', async done => {
@@ -86,8 +85,8 @@ describe('Searches comments', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toMatchObject(data[1]);
-    expect(response.body[1]).toMatchObject(data[0]);
+    expect(response.body[0]).toMatchObject(comments[1]);
+    expect(response.body[1]).toMatchObject(comments[0]);
 
     done();
   });
@@ -103,14 +102,13 @@ describe('Deletes a comment', () => {
   });
 
   it('Deletes a comment & returns it', async done => {
-    const data = { text: 'First comment' };
-    await Comment.create(data);
+    await Comment.create(comments[0]);
 
     let response = await request.delete('/api/comments/1').send();
 
     // Checks the response
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...comments[0] };
     expect(response.body).toMatchObject(expectedModel);
 
     // Checks the database
