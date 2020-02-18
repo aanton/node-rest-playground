@@ -6,7 +6,7 @@ const request = supertest(app);
 const { Comment, Post } = models;
 
 const posts = [{ title: 'First post' }, { title: 'Second post' }];
-
+const postWithSpecialChars = { title: 'Ⓜ東🐵𣇵😮📷' };
 const postWithComments = {
   title: 'First post',
   comments: [{ text: 'First comment' }, { text: 'Second comment' }],
@@ -78,6 +78,24 @@ describe('Creates a new post', () => {
     expect(databaseModel).toMatchObject(expectedModel);
     expect(databaseModel.createdAt).toEqual(new Date(response.body.createdAt));
     expect(databaseModel.updatedAt).toEqual(new Date(response.body.updatedAt));
+
+    done();
+  });
+
+  it('Saves a post with special characters & returns it', async done => {
+    const response = await request
+      .post('/api/posts')
+      .set('Content-type', 'application/json')
+      .send(postWithSpecialChars);
+
+    // Checks the response
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...postWithSpecialChars };
+    expect(response.body).toMatchObject(expectedModel);
+
+    // Checks the database
+    const databaseModel = await Post.findByPk(1);
+    expect(databaseModel).toMatchObject(expectedModel);
 
     done();
   });
