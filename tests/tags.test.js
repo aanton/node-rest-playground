@@ -13,7 +13,10 @@ const tags = [
 const tagWithPosts = {
   name: 'Tag A',
   slug: 'tag-a',
-  posts: [{ title: 'First post' }, { title: 'Second post' }],
+  posts: [
+    { id: 1, title: 'First post' },
+    { id: 2, title: 'Second post' },
+  ],
 };
 
 beforeEach(async () => {

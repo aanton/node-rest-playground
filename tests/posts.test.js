@@ -10,10 +10,13 @@ const postWithSpecialChars = { title: 'Ⓜ東𣇵🐵📷🐼🎅💯' };
 
 const postWithRelations = {
   title: 'First post with relations',
-  comments: [{ text: 'First comment' }, { text: 'Second comment' }],
+  comments: [
+    { id: 1, text: 'First comment' },
+    { id: 2, text: 'Second comment' },
+  ],
   tags: [
-    { name: 'Tag A', slug: 'tag-a' },
-    { name: 'Tag B', slug: 'tag-b' },
+    { id: 1, name: 'Tag A', slug: 'tag-a' },
+    { id: 2, name: 'Tag B', slug: 'tag-b' },
   ],
 };
 
