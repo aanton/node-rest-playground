@@ -200,7 +200,21 @@ describe('Updates a post', () => {
     done();
   });
 
-  it.skip('Fails if the title is too short', {});
+  it('Fails if the title is too short', async done => {
+    await Post.create(posts[0]);
+    const data = {
+      title: 'Shhh',
+    };
+
+    const response = await request
+      .post('/api/posts')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    expect(response).toBeModelValidationError();
+
+    done();
+  });
 
   it('Updates a post & returns it', async done => {
     await Post.create(posts[0]);
