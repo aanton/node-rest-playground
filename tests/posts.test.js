@@ -5,6 +5,13 @@ import supertest from 'supertest';
 const request = supertest(app);
 const { Comment, Post } = models;
 
+const posts = [{ title: 'First post' }, { title: 'Second post' }];
+
+const postWithComments = {
+  title: 'First post',
+  comments: [{ text: 'First comment' }, { text: 'Second comment' }],
+};
+
 beforeEach(async () => {
   await sequelize.sync({ force: true });
 });
@@ -41,18 +48,14 @@ describe('Creates a new post', () => {
   it.skip('Fails if the title is too short', {});
 
   it('Saves a post & returns it', async done => {
-    const data = {
-      title: 'My first test post',
-    };
-
     const response = await request
       .post('/api/posts')
       .set('Content-type', 'application/json')
-      .send(data);
+      .send(posts[0]);
 
     // Checks the response
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...posts[0] };
     expect(response.body).toMatchObject(expectedModel);
     expect(response.body.createdAt).toBeTruthy();
     expect(response.body.createdAt).toBe(response.body.updatedAt);
@@ -80,16 +83,15 @@ describe('Lists all posts', () => {
   });
 
   it('Gets all posts ordered by newest', async done => {
-    const data = [{ title: 'First post' }, { title: 'Second post' }];
-    await Post.create(data[0]);
-    await Post.create(data[1]);
+    await Post.create(posts[0]);
+    await Post.create(posts[1]);
 
     const response = await request.get('/api/posts').send();
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toMatchObject(data[1]);
-    expect(response.body[1]).toMatchObject(data[0]);
+    expect(response.body[0]).toMatchObject(posts[1]);
+    expect(response.body[1]).toMatchObject(posts[0]);
 
     done();
   });
@@ -105,13 +107,12 @@ describe('Gets a post', () => {
   });
 
   it('Gets a post without relationships', async done => {
-    const data = { title: 'First post' };
-    await Post.create(data);
+    await Post.create(posts[0]);
 
     const response = await request.get('/api/posts/1').send();
 
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...posts[0] };
     expect(response.body).toMatchObject(expectedModel);
 
     done();
@@ -137,7 +138,7 @@ describe('Updates a post', () => {
   });
 
   it('Fails if the title is missing', async done => {
-    await Post.create({ title: 'First post' });
+    await Post.create(posts[0]);
 
     const data = {};
 
@@ -152,7 +153,7 @@ describe('Updates a post', () => {
   });
 
   it('Fails if the title is empty', async done => {
-    await Post.create({ title: 'First post' });
+    await Post.create(posts[0]);
 
     const data = {
       title: '',
@@ -171,7 +172,7 @@ describe('Updates a post', () => {
   it.skip('Fails if the title is too short', {});
 
   it('Updates a post & returns it', async done => {
-    await Post.create({ title: 'First post' });
+    await Post.create(posts[0]);
 
     const data = {
       title: 'First post was updated',
@@ -184,7 +185,7 @@ describe('Updates a post', () => {
 
     // Checks the response
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...posts[0], ...data };
     expect(response.body).toMatchObject(expectedModel);
 
     // Checks the database
@@ -207,14 +208,13 @@ describe('Deletes a post', () => {
   });
 
   it('Deletes a post & returns it', async done => {
-    const data = { title: 'First post' };
-    await Post.create(data);
+    await Post.create(posts[0]);
 
     let response = await request.delete('/api/posts/1').send();
 
     // Checks the response
     expect(response.status).toBe(200);
-    const expectedModel = { id: 1, ...data };
+    const expectedModel = { id: 1, ...posts[0] };
     expect(response.body).toMatchObject(expectedModel);
 
     // Checks the database
@@ -243,8 +243,7 @@ describe('Gets all comments of a post', () => {
   });
 
   it('Gets an empty list if the post has not comments', async done => {
-    const data = { title: 'First post' };
-    await Post.create(data);
+    await Post.create(posts[0]);
 
     const response = await request.get('/api/posts/1/comments').send();
 
@@ -255,18 +254,14 @@ describe('Gets all comments of a post', () => {
   });
 
   it('Gets the comments of a post, ordered by newest', async done => {
-    const data = {
-      title: 'First post',
-      comments: [{ text: 'First comment' }, { text: 'Second comment' }],
-    };
-    await Post.create(data, { include: Comment });
+    await Post.create(postWithComments, { include: Comment });
 
     const response = await request.get('/api/posts/1/comments').send();
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    expect(response.body[0]).toMatchObject(data.comments[1]);
-    expect(response.body[1]).toMatchObject(data.comments[0]);
+    const expectedModels = postWithComments.comments.reverse(); // Comments are sorted by newest
+    expect(response.body).toMatchObject(expectedModels);
 
     done();
   });
@@ -282,7 +277,7 @@ describe('Creates a comment in a post', () => {
   });
 
   it('Fails if the text is missing', async done => {
-    await Post.create({ title: 'First post' });
+    await Post.create(posts[0]);
     const data = {};
 
     const response = await request
@@ -296,7 +291,7 @@ describe('Creates a comment in a post', () => {
   });
 
   it('Fails if the text is empty', async done => {
-    await Post.create({ title: 'First post' });
+    await Post.create(posts[0]);
     const data = { text: '' };
 
     const response = await request
@@ -310,7 +305,7 @@ describe('Creates a comment in a post', () => {
   });
 
   it('Creates a comment in a post without previous comments', async done => {
-    await Post.create({ title: 'First post' });
+    await Post.create(posts[0]);
     const data = { text: 'First comment' };
 
     const response = await request
