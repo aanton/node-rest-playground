@@ -161,7 +161,7 @@ describe('Gets a post', () => {
 
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...postWithRelations };
-    expectedModel.comments = expectedModel.comments.reverse(); // Comments are sorted by newest
+    expectedModel.comments = [...expectedModel.comments].reverse(); // Comments are sorted by newest
     delete expectedModel.tags; // Ignore tags
     expect(response.body).toMatchObject(expectedModel);
 
@@ -188,7 +188,7 @@ describe('Gets a post', () => {
 
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...postWithRelations };
-    expectedModel.comments = expectedModel.comments.reverse(); // Comments are sorted by newest
+    expectedModel.comments = [...expectedModel.comments].reverse(); // Comments are sorted by newest
     expect(response.body).toMatchObject(expectedModel);
 
     done();
@@ -346,7 +346,7 @@ describe('Gets all comments of a post', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    const expectedModels = postWithRelations.comments.reverse(); // Comments are sorted by newest
+    const expectedModels = [...postWithRelations.comments].reverse(); // Comments are sorted by newest
     expect(response.body).toMatchObject(expectedModels);
 
     done();

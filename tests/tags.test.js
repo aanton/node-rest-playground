@@ -73,7 +73,7 @@ describe('Gets a tag', () => {
 
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...tagWithPosts };
-    expectedModel.posts = expectedModel.posts.reverse(); // Posts are sorted by newest
+    expectedModel.posts = [...expectedModel.posts].reverse(); // Posts are sorted by newest
     expect(response.body).toMatchObject(expectedModel);
 
     done();
