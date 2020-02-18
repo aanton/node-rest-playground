@@ -154,7 +154,20 @@ describe('Gets a post', () => {
     done();
   });
 
-  it.skip('Gets a post with comments', {});
+  it('Gets a post with comments', async done => {
+    await Post.create(postWithRelations, { include: Comment });
+
+    const response = await request.get('/api/posts/1').send();
+
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...postWithRelations };
+    expectedModel.comments = expectedModel.comments.reverse(); // Comments are sorted by newest
+    delete expectedModel.tags; // Ignore tags
+    expect(response.body).toMatchObject(expectedModel);
+
+    done();
+  });
+
   it.skip('Gets a post with tags', {});
   it.skip('Gets a post with all relationships', {});
 });
