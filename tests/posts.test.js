@@ -6,7 +6,7 @@ const request = supertest(app);
 const { Comment, Post, Tag } = models;
 
 const posts = [{ title: 'First post' }, { title: 'Second post' }];
-const postWithSpecialChars = { title: 'Ⓜ東🐵𣇵😮📷' };
+const postWithSpecialChars = { title: 'Ⓜ東𣇵🐵📷🐼🎅💯' };
 
 const postWithRelations = {
   title: 'First post with relations',
