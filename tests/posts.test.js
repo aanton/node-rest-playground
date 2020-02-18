@@ -392,7 +392,7 @@ describe('Creates a comment in a post', () => {
 
   it('Creates a comment in a post without previous comments', async done => {
     await Post.create(posts[0]);
-    const data = { text: 'First comment' };
+    const data = { text: 'A new comment' };
 
     const response = await request
       .post('/api/posts/1/comments')
@@ -415,5 +415,30 @@ describe('Creates a comment in a post', () => {
     done();
   });
 
-  it.skip('Creates a comment in a post that already has comments', {});
+  it('Creates a comment in a post that already has comments', async done => {
+    await Post.create(postWithRelations, { include: Comment });
+    const data = { text: 'A new comment' };
+
+    const response = await request
+      .post('/api/posts/1/comments')
+      .set('Content-type', 'application/json')
+      .send(data);
+
+    // Checks the response
+    expect(response.status).toBe(200);
+    const expectedId = postWithRelations.comments.length + 1;
+    const expectedModel = { id: expectedId, ...data };
+    expect(response.body).toMatchObject(expectedModel);
+
+    // Checks the database
+    const databaseModel = await Comment.findAll({
+      where: {
+        postId: 1,
+      },
+    });
+    const expectedComments = [...postWithRelations.comments, expectedModel];
+    expect(databaseModel).toMatchObject(expectedComments);
+
+    done();
+  });
 });
