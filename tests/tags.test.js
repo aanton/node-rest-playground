@@ -1,8 +1,9 @@
 import app from '../src/server';
-import sequelize, { Post, Tag } from '../src/models';
+import { sequelize, models } from '../src/models';
 import supertest from 'supertest';
 
 const request = supertest(app);
+const { Post, Tag } = models;
 
 const tags = [
   { name: 'Tag A', slug: 'tag-a' },

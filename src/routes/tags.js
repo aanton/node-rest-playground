@@ -1,5 +1,7 @@
 import express from 'express';
-import { Tag } from '../models';
+import { models } from '../models';
+
+const { Tag } = models;
 
 const guard = async (req, res, next) => {
   const tagId = parseInt(req.params.tagId);

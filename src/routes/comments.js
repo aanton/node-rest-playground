@@ -1,6 +1,8 @@
 import express from 'express';
 import { Op } from 'sequelize';
-import { Comment } from '../models';
+import { models } from '../models';
+
+const { Comment } = models;
 
 const guard = async (req, res, next) => {
   const commentId = parseInt(req.params.commentId);

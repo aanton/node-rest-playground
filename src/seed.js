@@ -1,7 +1,9 @@
-import sequelize, { Post, Comment, Tag } from './models';
 import faker from 'faker';
 import random from 'lodash.random';
 import sampleSize from 'lodash.samplesize';
+import { sequelize, models } from './models';
+
+const { Comment, Post, Tag } = models;
 
 const recreate = async () => {
   await sequelize.sync({ force: true });

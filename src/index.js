@@ -1,5 +1,5 @@
 import app from './server';
-import sequelize from './models';
+import { sequelize } from './models';
 
 const startServer = () => {
   const port = process.env.PORT || 3000;

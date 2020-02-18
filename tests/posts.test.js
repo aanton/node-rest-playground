@@ -1,8 +1,9 @@
 import app from '../src/server';
-import sequelize, { Comment, Post } from '../src/models';
+import { sequelize, models } from '../src/models';
 import supertest from 'supertest';
 
 const request = supertest(app);
+const { Comment, Post } = models;
 
 beforeEach(async () => {
   await sequelize.sync({ force: true });
@@ -211,7 +212,6 @@ describe('Deletes a post', () => {
 
     let response = await request.delete('/api/posts/1').send();
 
-    
     // Checks the response
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...data };

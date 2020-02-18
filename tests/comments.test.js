@@ -1,8 +1,9 @@
 import app from '../src/server';
-import sequelize, { Comment } from '../src/models';
+import { sequelize, models } from '../src/models';
 import supertest from 'supertest';
 
 const request = supertest(app);
+const { Comment } = models;
 
 beforeEach(async () => {
   await sequelize.sync({ force: true });
