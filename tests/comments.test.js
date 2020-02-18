@@ -63,7 +63,17 @@ describe('Searches comments', () => {
     done();
   });
 
-  it.skip('Fails if the query is too short', {});
+  it('Fails if the query is too short', async done => {
+    const query = 'co';
+    const response = await request
+      .get(`/api/comments/search?q=${query}`)
+      .send();
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('Search parameter is too short');
+
+    done();
+  });
 
   it('Gets an empty list if there are not matched comments', async done => {
     const query = 'abracadabra';

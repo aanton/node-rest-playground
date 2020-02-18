@@ -27,6 +27,9 @@ const search = async (req, res) => {
   if (!search) {
     return res.status(404).send({ error: `Search parameter is empty/invalid` });
   }
+  if (search.length < 3) {
+    return res.status(404).send({ error: `Search parameter is too short` });
+  }
 
   const comments = await Comment.findAll({
     where: {
