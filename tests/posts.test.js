@@ -7,9 +7,14 @@ const { Comment, Post } = models;
 
 const posts = [{ title: 'First post' }, { title: 'Second post' }];
 const postWithSpecialChars = { title: 'Ⓜ東🐵𣇵😮📷' };
-const postWithComments = {
-  title: 'First post',
+
+const postWithRelations = {
+  title: 'First post with relations',
   comments: [{ text: 'First comment' }, { text: 'Second comment' }],
+  tags: [
+    { name: 'Tag A', slug: 'tag-a' },
+    { name: 'Tag B', slug: 'tag-b' },
+  ],
 };
 
 beforeEach(async () => {
@@ -299,13 +304,13 @@ describe('Gets all comments of a post', () => {
   });
 
   it('Gets the comments of a post, ordered by newest', async done => {
-    await Post.create(postWithComments, { include: Comment });
+    await Post.create(postWithRelations, { include: Comment });
 
     const response = await request.get('/api/posts/1/comments').send();
 
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
-    const expectedModels = postWithComments.comments.reverse(); // Comments are sorted by newest
+    const expectedModels = postWithRelations.comments.reverse(); // Comments are sorted by newest
     expect(response.body).toMatchObject(expectedModels);
 
     done();
