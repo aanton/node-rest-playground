@@ -19,4 +19,13 @@ export default class Comment extends Sequelize.Model {
   static associate(models) {
     this.belongsTo(models.Post);
   }
+
+  static findByPost(postId) {
+    return this.findAll({
+      where: {
+        postId: postId,
+      },
+      order: [['id', 'DESC']],
+    });
+  }
 }

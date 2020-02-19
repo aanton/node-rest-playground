@@ -72,10 +72,7 @@ const remove = async (req, res) => {
 };
 
 const getComments = async (req, res) => {
-  const post = res.locals.post;
-  const comments = await post.getComments({
-    order: [['id', 'DESC']],
-  });
+  const comments = await Comment.findByPost(res.locals.post.id);
   res.json(comments);
 };
 
