@@ -28,4 +28,20 @@ export default class Tag extends Sequelize.Model {
       order: [[this.sequelize.model('post'), 'id', 'DESC']],
     });
   }
+
+  static findByPost(postId) {
+    return this.findAll({
+      include: [
+        {
+          model: this.sequelize.model('post'),
+          required: true,
+          through: {
+            where: {
+              postId: postId,
+            },
+          },
+        },
+      ],
+    });
+  }
 }
