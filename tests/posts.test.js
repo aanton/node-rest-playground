@@ -296,7 +296,7 @@ describe('Deletes a post', () => {
     done();
   });
 
-  it('Deletes a post & returns it', async done => {
+  it('Deletes a post without relationships & returns it', async done => {
     await Post.create(posts[0]);
 
     let response = await request.delete('/api/posts/1').send();
@@ -317,9 +317,32 @@ describe('Deletes a post', () => {
     done();
   });
 
-  it.skip('Deletes a post with comments', {});
-  it.skip('Deletes a post with tags', {});
-  it.skip('Deletes a post with all relationships', {});
+  it('Deletes a post with all relationships & returns it', async done => {
+    await Post.create(postWithRelations, { include: [Comment, Tag] });
+
+    let response = await request.delete('/api/posts/1').send();
+
+    // Checks the response
+    expect(response.status).toBe(200);
+    const expectedModel = { id: 1, ...postWithRelations };
+    delete expectedModel.comments; // Ignore comments
+    delete expectedModel.tags; // Ignore tags
+    expect(response.body).toMatchObject(expectedModel);
+
+    // Checks the database
+    const databaseModel = await Post.findByPk(1);
+    expect(databaseModel).toBe(null);
+    const databaseComments = await Comment.findByPost(1);
+    expect(databaseComments).toEqual([]);
+    const databaseTags = await Tag.findByPost(1);
+    expect(databaseTags).toEqual([]);
+
+    // Requests the deleted post
+    response = await request.delete('/api/posts/1').send();
+    expect(response).toBePostNotFound();
+
+    done();
+  });
 });
 
 describe('Gets all comments of a post', () => {
