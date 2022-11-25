@@ -20,7 +20,7 @@ List of packages & tools used during development:
 - [@babel/node](https://babeljs.io/docs/en/next/babel-node.html), a CLI that works exactly the same as the Node.js CLI, with the added benefit of using [Babel](https://babeljs.io/), a toolchain to convert modern ECMAScript 2015+ code into a backwards compatible version of JavaScript
 - [Jest](https://jestjs.io/), a testing framework that [supports Babel](https://github.com/facebook/jest#using-babel)
 - [SuperTest](https://github.com/visionmedia/supertest), a library for testing Node.js HTTP servers using a fluent API
-- [Faker](http://marak.github.io/faker.js/), a generator of fake data
+- [Falso](https://github.com/ngneat/falso), a generator of fake data
 
 ## Local installation
 

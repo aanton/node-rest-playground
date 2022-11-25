@@ -1,7 +1,7 @@
-import faker from 'faker';
+import { randParagraph, randSlug, randTextRange } from '@ngneat/falso';
 import random from 'lodash.random';
 import sampleSize from 'lodash.samplesize';
-import { sequelize, models } from './models';
+import { models, sequelize } from './models';
 
 const { Comment, Post, Tag } = models;
 
@@ -13,7 +13,7 @@ const recreate = async () => {
 const getFakePosts = count => {
   return Array.from({ length: count }, () => {
     return {
-      title: faker.lorem.sentence().replace(/\.$/, ''),
+      title: randTextRange({ min: 10, max: 100 }).replace(/\.$/, ''),
       comments: getFakeComments(random(1, 3)),
     };
   });
@@ -22,14 +22,14 @@ const getFakePosts = count => {
 const getFakeComments = count => {
   return Array.from({ length: count }, () => {
     return {
-      text: faker.lorem.paragraph().replace(/\.$/, ''),
+      text: randParagraph().replace(/\.$/, ''),
     };
   });
 };
 
 const getFakeTags = count => {
   return Array.from({ length: count }, () => {
-    const slug = faker.lorem.slug();
+    const slug = randSlug().split('-').slice(0,2).join('-');
     const name = slug[0].toUpperCase() + slug.slice(1).replace(/-/g, ' ');
 
     return {
