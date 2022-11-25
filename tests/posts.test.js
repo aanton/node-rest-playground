@@ -25,7 +25,7 @@ beforeEach(async () => {
 });
 
 describe('Creates a new post', () => {
-  it('Fails if the title is missing', async done => {
+  it('Fails if the title is missing', async () => {
     const data = {};
 
     const response = await request
@@ -34,11 +34,9 @@ describe('Creates a new post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Fails if the title is empty', async done => {
+  it('Fails if the title is empty', async () => {
     const data = {
       title: '',
     };
@@ -49,11 +47,9 @@ describe('Creates a new post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Fails if the title is too short', async done => {
+  it('Fails if the title is too short', async () => {
     const data = {
       title: 'Shhh',
     };
@@ -64,11 +60,9 @@ describe('Creates a new post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Saves a post & returns it', async done => {
+  it('Saves a post & returns it', async () => {
     const response = await request
       .post('/api/posts')
       .set('Content-type', 'application/json')
@@ -86,11 +80,9 @@ describe('Creates a new post', () => {
     expect(databaseModel).toMatchObject(expectedModel);
     expect(databaseModel.createdAt).toEqual(new Date(response.body.createdAt));
     expect(databaseModel.updatedAt).toEqual(new Date(response.body.updatedAt));
-
-    done();
   });
 
-  it('Saves a post with special characters & returns it', async done => {
+  it('Saves a post with special characters & returns it', async () => {
     const response = await request
       .post('/api/posts')
       .set('Content-type', 'application/json')
@@ -104,24 +96,20 @@ describe('Creates a new post', () => {
     // Checks the database
     const databaseModel = await Post.findByPk(1);
     expect(databaseModel).toMatchObject(expectedModel);
-
-    done();
   });
 
-  it.skip('Saves a post with tags & returns it', {});
+  it.skip('Saves a post with tags & returns it', () => {});
 });
 
 describe('Lists all posts', () => {
-  it('Gets an empty list if database is empty', async done => {
+  it('Gets an empty list if database is empty', async () => {
     const response = await request.get('/api/posts').send();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
-
-    done();
   });
 
-  it('Gets all posts ordered by newest', async done => {
+  it('Gets all posts ordered by newest', async () => {
     await Post.create(posts[0]);
     await Post.create(posts[1]);
 
@@ -131,21 +119,17 @@ describe('Lists all posts', () => {
     expect(response.body.length).toBe(2);
     expect(response.body[0]).toMatchObject(posts[1]);
     expect(response.body[1]).toMatchObject(posts[0]);
-
-    done();
   });
 });
 
 describe('Gets a post', () => {
-  it('Fails if the post does not exist', async done => {
+  it('Fails if the post does not exist', async () => {
     const response = await request.get('/api/posts/1').send();
 
     expect(response).toBePostNotFound();
-
-    done();
   });
 
-  it('Gets a post without relationships', async done => {
+  it('Gets a post without relationships', async () => {
     await Post.create(posts[0]);
 
     const response = await request.get('/api/posts/1').send();
@@ -153,11 +137,9 @@ describe('Gets a post', () => {
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...posts[0] };
     expect(response.body).toMatchObject(expectedModel);
-
-    done();
   });
 
-  it('Gets a post with comments', async done => {
+  it('Gets a post with comments', async () => {
     await Post.create(postWithRelations, { include: Comment });
 
     const response = await request.get('/api/posts/1').send();
@@ -167,11 +149,9 @@ describe('Gets a post', () => {
     expectedModel.comments = [...expectedModel.comments].reverse(); // Comments are sorted by newest
     delete expectedModel.tags; // Ignore tags
     expect(response.body).toMatchObject(expectedModel);
-
-    done();
   });
 
-  it('Gets a post with tags', async done => {
+  it('Gets a post with tags', async () => {
     await Post.create(postWithRelations, { include: Tag });
 
     const response = await request.get('/api/posts/1').send();
@@ -180,11 +160,9 @@ describe('Gets a post', () => {
     const expectedModel = { id: 1, ...postWithRelations };
     delete expectedModel.comments; // Ignore comments
     expect(response.body).toMatchObject(expectedModel);
-
-    done();
   });
 
-  it('Gets a post with all relationships', async done => {
+  it('Gets a post with all relationships', async () => {
     await Post.create(postWithRelations, { include: [Comment, Tag] });
 
     const response = await request.get('/api/posts/1').send();
@@ -193,13 +171,11 @@ describe('Gets a post', () => {
     const expectedModel = { id: 1, ...postWithRelations };
     expectedModel.comments = [...expectedModel.comments].reverse(); // Comments are sorted by newest
     expect(response.body).toMatchObject(expectedModel);
-
-    done();
   });
 });
 
 describe('Updates a post', () => {
-  it('Fails if the post does not exist', async done => {
+  it('Fails if the post does not exist', async () => {
     const data = {};
 
     const response = await request
@@ -208,11 +184,9 @@ describe('Updates a post', () => {
       .send(data);
 
     expect(response).toBePostNotFound();
-
-    done();
   });
 
-  it('Fails if the title is missing', async done => {
+  it('Fails if the title is missing', async () => {
     await Post.create(posts[0]);
 
     const data = {};
@@ -223,11 +197,9 @@ describe('Updates a post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Fails if the title is empty', async done => {
+  it('Fails if the title is empty', async () => {
     await Post.create(posts[0]);
 
     const data = {
@@ -240,11 +212,9 @@ describe('Updates a post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Fails if the title is too short', async done => {
+  it('Fails if the title is too short', async () => {
     await Post.create(posts[0]);
     const data = {
       title: 'Shhh',
@@ -256,11 +226,9 @@ describe('Updates a post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Updates a post & returns it', async done => {
+  it('Updates a post & returns it', async () => {
     await Post.create(posts[0]);
 
     const data = {
@@ -282,21 +250,17 @@ describe('Updates a post', () => {
     expect(databaseModel).toMatchObject(expectedModel);
     expect(databaseModel.createdAt).toEqual(new Date(response.body.createdAt));
     expect(databaseModel.updatedAt).toEqual(new Date(response.body.updatedAt));
-
-    done();
   });
 });
 
 describe('Deletes a post', () => {
-  it('Fails if the post does not exist', async done => {
+  it('Fails if the post does not exist', async () => {
     const response = await request.delete('/api/posts/1').send();
 
     expect(response).toBePostNotFound();
-
-    done();
   });
 
-  it('Deletes a post without relationships & returns it', async done => {
+  it('Deletes a post without relationships & returns it', async () => {
     await Post.create(posts[0]);
 
     let response = await request.delete('/api/posts/1').send();
@@ -313,11 +277,9 @@ describe('Deletes a post', () => {
     // Requests the deleted post
     response = await request.delete('/api/posts/1').send();
     expect(response).toBePostNotFound();
-
-    done();
   });
 
-  it('Deletes a post with all relationships & returns it', async done => {
+  it('Deletes a post with all relationships & returns it', async () => {
     await Post.create(postWithRelations, { include: [Comment, Tag] });
 
     let response = await request.delete('/api/posts/1').send();
@@ -340,32 +302,26 @@ describe('Deletes a post', () => {
     // Requests the deleted post
     response = await request.delete('/api/posts/1').send();
     expect(response).toBePostNotFound();
-
-    done();
   });
 });
 
 describe('Gets all comments of a post', () => {
-  it('Fails if the post does not exist', async done => {
+  it('Fails if the post does not exist', async () => {
     const response = await request.get('/api/posts/1/comments').send();
 
     expect(response).toBePostNotFound();
-
-    done();
   });
 
-  it('Gets an empty list if the post has not comments', async done => {
+  it('Gets an empty list if the post has not comments', async () => {
     await Post.create(posts[0]);
 
     const response = await request.get('/api/posts/1/comments').send();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
-
-    done();
   });
 
-  it('Gets the comments of a post, ordered by newest', async done => {
+  it('Gets the comments of a post, ordered by newest', async () => {
     await Post.create(postWithRelations, { include: Comment });
 
     const response = await request.get('/api/posts/1/comments').send();
@@ -374,21 +330,17 @@ describe('Gets all comments of a post', () => {
     expect(response.body.length).toBe(2);
     const expectedModels = [...postWithRelations.comments].reverse(); // Comments are sorted by newest
     expect(response.body).toMatchObject(expectedModels);
-
-    done();
   });
 });
 
 describe('Creates a comment in a post', () => {
-  it('Fails if the post does not exist', async done => {
+  it('Fails if the post does not exist', async () => {
     const response = await request.post('/api/posts/1/comments').send();
 
     expect(response).toBePostNotFound();
-
-    done();
   });
 
-  it('Fails if the text is missing', async done => {
+  it('Fails if the text is missing', async () => {
     await Post.create(posts[0]);
     const data = {};
 
@@ -398,11 +350,9 @@ describe('Creates a comment in a post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Fails if the text is empty', async done => {
+  it('Fails if the text is empty', async () => {
     await Post.create(posts[0]);
     const data = { text: '' };
 
@@ -412,11 +362,9 @@ describe('Creates a comment in a post', () => {
       .send(data);
 
     expect(response).toBeModelValidationError();
-
-    done();
   });
 
-  it('Creates a comment in a post without previous comments', async done => {
+  it('Creates a comment in a post without previous comments', async () => {
     await Post.create(posts[0]);
     const data = { text: 'A new comment' };
 
@@ -437,11 +385,9 @@ describe('Creates a comment in a post', () => {
     expect(databaseModel).toMatchObject(expectedModel);
     expect(databaseModel.createdAt).toEqual(new Date(response.body.createdAt));
     expect(databaseModel.updatedAt).toEqual(new Date(response.body.updatedAt));
-
-    done();
   });
 
-  it('Creates a comment in a post that already has comments', async done => {
+  it('Creates a comment in a post that already has comments', async () => {
     await Post.create(postWithRelations, { include: Comment });
     const data = { text: 'A new comment' };
 
@@ -464,7 +410,5 @@ describe('Creates a comment in a post', () => {
     });
     const expectedComments = [...postWithRelations.comments, expectedModel];
     expect(databaseModel).toMatchObject(expectedComments);
-
-    done();
   });
 });

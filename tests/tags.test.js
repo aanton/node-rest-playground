@@ -24,16 +24,14 @@ beforeEach(async () => {
 });
 
 describe('Lists all tags', () => {
-  it('Gets an empty list if database is empty', async done => {
+  it('Gets an empty list if database is empty', async () => {
     const response = await request.get('/api/tags').send();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
-
-    done();
   });
 
-  it('Gets all tags ordered by name', async done => {
+  it('Gets all tags ordered by name', async () => {
     await Tag.create(tags[0]);
     await Tag.create(tags[1]);
 
@@ -43,21 +41,17 @@ describe('Lists all tags', () => {
     expect(response.body.length).toBe(2);
     expect(response.body[0]).toMatchObject(tags[0]);
     expect(response.body[1]).toMatchObject(tags[1]);
-
-    done();
   });
 });
 
 describe('Gets a tag', () => {
-  it('Fails if the tag does not exist', async done => {
+  it('Fails if the tag does not exist', async () => {
     const response = await request.get('/api/tags/1').send();
 
     expect(response).toBeTagNotFound();
-
-    done();
   });
 
-  it('Gets a tag without relationships', async done => {
+  it('Gets a tag without relationships', async () => {
     await Tag.create(tags[0]);
 
     const response = await request.get('/api/tags/1').send();
@@ -65,11 +59,9 @@ describe('Gets a tag', () => {
     expect(response.status).toBe(200);
     const expectedModel = { id: 1, ...tags[0], posts: [] };
     expect(response.body).toMatchObject(expectedModel);
-
-    done();
   });
 
-  it('Gets a tag with linked posts', async done => {
+  it('Gets a tag with linked posts', async () => {
     await Tag.create(tagWithPosts, { include: Post });
 
     const response = await request.get('/api/tags/1').send();
@@ -78,21 +70,17 @@ describe('Gets a tag', () => {
     const expectedModel = { id: 1, ...tagWithPosts };
     expectedModel.posts = [...expectedModel.posts].reverse(); // Posts are sorted by newest
     expect(response.body).toMatchObject(expectedModel);
-
-    done();
   });
 });
 
 describe('Deletes a tag', () => {
-  it('Fails if the tag does not exist', async done => {
+  it('Fails if the tag does not exist', async () => {
     const response = await request.delete('/api/tags/1').send();
 
     expect(response).toBeTagNotFound();
-
-    done();
   });
 
-  it('Deletes a tag without linked posts & returns it', async done => {
+  it('Deletes a tag without linked posts & returns it', async () => {
     await Tag.create(tags[0]);
 
     let response = await request.delete('/api/tags/1').send();
@@ -109,11 +97,9 @@ describe('Deletes a tag', () => {
     // Requests the deleted tag
     response = await request.delete('/api/tags/1').send();
     expect(response).toBeTagNotFound();
-
-    done();
   });
 
-  it('Deletes a tag with linked posts & returns it', async done => {
+  it('Deletes a tag with linked posts & returns it', async () => {
     await Tag.create(tagWithPosts, { include: Post });
 
     let response = await request.delete('/api/tags/1').send();
@@ -133,7 +119,5 @@ describe('Deletes a tag', () => {
     // Requests the deleted tag
     response = await request.delete('/api/tags/1').send();
     expect(response).toBeTagNotFound();
-
-    done();
   });
 });

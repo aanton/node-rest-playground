@@ -12,16 +12,14 @@ beforeEach(async () => {
 });
 
 describe('Lists all comments', () => {
-  it('Gets an empty list if database is empty', async done => {
+  it('Gets an empty list if database is empty', async () => {
     const response = await request.get('/api/comments').send();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
-
-    done();
   });
 
-  it('Gets all comments ordered by newest', async done => {
+  it('Gets all comments ordered by newest', async () => {
     await Comment.create(comments[0]);
     await Comment.create(comments[1]);
 
@@ -31,8 +29,6 @@ describe('Lists all comments', () => {
     expect(response.body.length).toBe(2);
     expect(response.body[0]).toMatchObject(comments[1]);
     expect(response.body[1]).toMatchObject(comments[0]);
-
-    done();
   });
 });
 
@@ -42,16 +38,14 @@ describe('Searches comments', () => {
     await Comment.create(comments[1]);
   });
 
-  it('Fails if the query is missing', async done => {
+  it('Fails if the query is missing', async () => {
     const response = await request.get(`/api/comments/search`).send();
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Search parameter is empty/invalid');
-
-    done();
   });
 
-  it('Fails if the query is empty', async done => {
+  it('Fails if the query is empty', async () => {
     const query = '';
     const response = await request
       .get(`/api/comments/search?q=${query}`)
@@ -59,11 +53,9 @@ describe('Searches comments', () => {
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Search parameter is empty/invalid');
-
-    done();
   });
 
-  it('Fails if the query is too short', async done => {
+  it('Fails if the query is too short', async () => {
     const query = 'co';
     const response = await request
       .get(`/api/comments/search?q=${query}`)
@@ -71,11 +63,9 @@ describe('Searches comments', () => {
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Search parameter is too short');
-
-    done();
   });
 
-  it('Gets an empty list if there are not matched comments', async done => {
+  it('Gets an empty list if there are not matched comments', async () => {
     const query = 'abracadabra';
     const response = await request
       .get(`/api/comments/search?q=${query}`)
@@ -83,11 +73,9 @@ describe('Searches comments', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([]);
-
-    done();
   });
 
-  it('Gets all matched comments ordered by newest', async done => {
+  it('Gets all matched comments ordered by newest', async () => {
     const query = 'comment';
     const response = await request
       .get(`/api/comments/search?q=${query}`)
@@ -97,21 +85,17 @@ describe('Searches comments', () => {
     expect(response.body.length).toBe(2);
     expect(response.body[0]).toMatchObject(comments[1]);
     expect(response.body[1]).toMatchObject(comments[0]);
-
-    done();
   });
 });
 
 describe('Deletes a comment', () => {
-  it('Fails if the comment does not exist', async done => {
+  it('Fails if the comment does not exist', async () => {
     const response = await request.delete('/api/comments/1').send();
 
     expect(response).toBeCommentNotFound();
-
-    done();
   });
 
-  it('Deletes a comment & returns it', async done => {
+  it('Deletes a comment & returns it', async () => {
     await Comment.create(comments[0]);
 
     let response = await request.delete('/api/comments/1').send();
@@ -124,7 +108,5 @@ describe('Deletes a comment', () => {
     // Checks the database
     const databaseModel = await Comment.findByPk(1);
     expect(databaseModel).toBe(null);
-
-    done();
   });
 });
